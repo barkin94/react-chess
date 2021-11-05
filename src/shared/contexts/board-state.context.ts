@@ -1,21 +1,31 @@
 import { Directions } from "../enums/directions.enum";
-import Graph, { Node } from "../models/graph.model";
-import { Piece } from "../models/piece.model";
-import { Square } from "../models/square.model";
+import { Graph, Node } from "../models/graph.model";
+import { Piece } from "../../domain/chess/piece";
+import { Square } from "../../domain/chess/square";
 import { Coordinates } from "../types/coordinates.type";
 import { PieceColor } from "../types/piece-color";
 import { pieceTypes } from "../types/piece-type";
 
 export class BoardState {
-  squareMatrice: (Node<Square> | 1)[][] = [];
-  graph = new Graph<Square>(Square.create({ x: 0, y: 0 }));
+  squareMatrice: (Node<Square> | 1)[][] = [
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+  ];
+
+  //graph = new Graph<Square>(Square.create({ x: 0, y: 0 }));
+
   private directionCoordinateMap = new Map<
     Directions,
     { x: number; y: number }
   >();
 
   constructor() {
-    this.setSquareMatrice();
     this.setDirectionCoordinateMap();
     this.initSquares();
     this.placePiecesOfOpponent("black");
@@ -61,16 +71,6 @@ export class BoardState {
     }
   }
 
-  private setSquareMatrice() {
-    for (let y = 0; y < 8; y++) {
-      this.squareMatrice.push([]);
-
-      for (let x = 0; x < 8; x++) {
-        this.squareMatrice[y].push(1);
-      }
-    }
-  }
-
   addAdjacentOrEdgeIfAvailable(
     sourceNode: Node<Square>,
     direction: Directions
@@ -80,21 +80,21 @@ export class BoardState {
       return;
     }
 
-    if (this.squareMatrice[coordinates.y][coordinates.x] === 1) {
-      const squareData = Square.create({
-        x: coordinates.x,
-        y: coordinates.y,
-      });
-      const addedNode = this.graph.addNode(squareData, sourceNode, direction);
-      this.squareMatrice[coordinates.y][coordinates.x] = addedNode;
-    } else {
-      this.graph.addEdgeToNode(sourceNode, {
-        target: this.squareMatrice[coordinates.y][
-          coordinates.x
-        ] as Node<Square>,
-        weight: direction,
-      });
-    }
+    // if (this.squareMatrice[coordinates.y][coordinates.x] === 1) {
+    //   const squareData = Square.create({
+    //     x: coordinates.x,
+    //     y: coordinates.y,
+    //   });
+    //   const addedNode = this.graph.addNode(squareData, sourceNode, direction);
+    //   this.squareMatrice[coordinates.y][coordinates.x] = addedNode;
+    // } else {
+    //   this.graph.addEdgeToNode(sourceNode, {
+    //     target: this.squareMatrice[coordinates.y][
+    //       coordinates.x
+    //     ] as Node<Square>,
+    //     weight: direction,
+    //   });
+    // }
   }
 
   private getTargetSquareCoordinates(
@@ -123,13 +123,12 @@ export class BoardState {
   }
 
   initSquares() {
-    this.squareMatrice[0][0] = this.graph.entryNode;
-
-    for (let y of this.squareMatrice) {
-      for (let x of y) {
-        this.initNodesForSquares(x as Node<Square>);
-      }
-    }
+    // this.squareMatrice[0][0] = this.graph.entryNode;
+    // for (let y of this.squareMatrice) {
+    //   for (let x of y) {
+    //     this.initNodesForSquares(x as Node<Square>);
+    //   }
+    // }
   }
   //   private recursivelyInitNodesForSquares(
   //     node: Node<Square>,

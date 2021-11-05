@@ -1,8 +1,8 @@
-import { pieceData } from "../constants/piece-data";
-import { Coordinates } from "../types/coordinates.type";
-import { PieceColor } from "../types/piece-color";
-import { PieceType, pieceTypes } from "../types/piece-type";
-import { Square } from "./square.model";
+import { pieceData } from "../../shared/constants/piece-data";
+import { Coordinates } from "../../shared/types/coordinates.type";
+import { PieceColor } from "../../shared/types/piece-color";
+import { PieceType, pieceTypes } from "../../shared/types/piece-type";
+import { Square } from "./square";
 
 export class Piece {
   constructor(

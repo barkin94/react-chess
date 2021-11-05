@@ -1,4 +1,4 @@
-import { Piece } from "../models/piece.model";
+import { Piece } from "../../domain/chess/piece";
 import { PieceColor } from "../types/piece-color";
 
 export class GameState {

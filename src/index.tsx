@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import { Chess } from "./chess/chess";
+import { Chess } from "./components/chess";
 
 ReactDOM.render(
   <React.StrictMode>

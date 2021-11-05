@@ -1,6 +1,6 @@
 import { useReducer } from "react";
-import { Piece } from "../../../shared/models/piece.model";
-import { pieceClick } from "../../../shared/reducers/piece.reducer";
+import { Piece } from "../../domain/chess/piece";
+import { pieceClick } from "../../shared/reducers/piece.reducer";
 import "./piece.css";
 interface PieceProps {
   piece: Piece;

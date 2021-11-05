@@ -1,4 +1,4 @@
-export default class Graph<T = any> {
+export class Graph<T = any> {
   private _entryNode: Node<T>;
   private _nodes: Map<number, Node<T>> = new Map();
   private _edges: Map<number, EdgeWithNodeId[]> = new Map();
@@ -48,14 +48,7 @@ export default class Graph<T = any> {
     this._edges.set(node.id, edgesWithNodeId);
   }
 
-  //   getNode(value: T) {
-  //     const node = this._nodes.get(JSON.stringify(value));
-  //     //if (!node) throw new Error("node not found in graph");
-  //     return node;
-  //   }
-
   getAdjacentByWeight(node: Node<T>, weight: number) {
-    //const foundNode = this.getNode(node);
     if (!this.getNodeById(node.id)) {
       throw new Error("node not found in graph");
     }
@@ -68,8 +61,12 @@ export default class Graph<T = any> {
       throw new Error("node not found");
     }
 
-    const edgeswithNodeId = this._edges.get(node.id) || [];
-    return this.mapEdgeWithNodeIdToEdge(edgeswithNodeId);
+    const edges = this._edges.get(node.id) || [];
+
+    return edges.map((edge) => ({
+      target: this.getNodeById(edge.nodeId),
+      weight: edge.weight,
+    }));
   }
 
   getAllNodes() {
@@ -91,13 +88,6 @@ export default class Graph<T = any> {
       throw new Error("node not found");
     }
     return node;
-  }
-
-  private mapEdgeWithNodeIdToEdge(edges: EdgeWithNodeId[]): Edge[] {
-    return edges.map((edge) => ({
-      target: this.getNodeById(edge.nodeId),
-      weight: edge.weight,
-    }));
   }
 
   private mapEdgeToEdgeWithNodeId(edges: Edge[]): EdgeWithNodeId[] {
