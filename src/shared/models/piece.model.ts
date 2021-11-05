@@ -1,3 +1,4 @@
+import { pieceData } from "../constants/piece-data";
 import { Coordinates } from "../types/coordinates.type";
 import { PieceColor } from "../types/piece-color";
 import { PieceType, pieceTypes } from "../types/piece-type";
@@ -7,14 +8,15 @@ export class Piece {
   constructor(
     public type: PieceType,
     public moveLimit: number,
-    public color: PieceColor
+    public color: PieceColor,
+    public icon: string
   ) {}
 
-  static getStartingPositionForSelf(piece: PieceType): Coordinates[] {
+  static getStartingPositionsForSelf(piece: PieceType): Coordinates[] {
     return this.getStartingPosition(piece, "bottom");
   }
 
-  static getStartingPositionForOpponent(piece: PieceType): Coordinates[] {
+  static getStartingPositionsForOpponent(piece: PieceType): Coordinates[] {
     return this.getStartingPosition(piece, "top");
   }
 
@@ -55,22 +57,21 @@ export class Piece {
     }
   }
 
-  public static initPiecesForSelf() {
-    return pieceTypes.map((p) => {
-      return new Piece(p, 1, "black");
-    });
-  }
-
-  public static getSquaresWithPieces() {
-    const result: Square[] = [];
-    pieceTypes.forEach((t) => {
-      const squares = Piece.getStartingPositionForSelf(t).map((coordinates) => {
-        const square = Square.create(coordinates);
-        square.placePiece(new Piece(t, 10, "black"));
-        return square;
-      });
-      result.push(...squares);
-    });
-    return result;
+  public static initPiece(pieceType: PieceType, color: PieceColor) {
+    return new Piece(
+      pieceType,
+      pieceData[pieceType].moveLimit,
+      color,
+      pieceData[pieceType].icon[color]
+    );
   }
 }
+
+type PieceData = {
+  [key in PieceType]: {
+    icon: {
+      [key in PieceColor]: string;
+    };
+    moveLimit: number;
+  };
+};

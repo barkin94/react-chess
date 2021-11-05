@@ -3,99 +3,76 @@ import { SquareElement, SquareProps } from "./square/square";
 import "./board.css";
 import { BoardStateContext } from "../chess";
 import { Square } from "../../shared/models/square.model";
-import { pieceTypes } from "../../shared/types/piece-type";
-import { Piece } from "../../shared/models/piece.model";
 import { Directions } from "../../shared/enums/directions.enum";
+import { Node } from "../../shared/models/graph.model";
 
 export function Board() {
   const boardState = useContext(BoardStateContext);
 
   useEffect(() => {
-    initSquares();
+    placeSquaresUsingMatrice();
+    //initSquaresFromGraph();
   }, []);
 
   const [squareProps, setSquareProps] = useState<SquareProps[][]>([]);
 
-  const initSquares = () => {
-    const data: SquareProps[][] = [];
+  const placeSquaresUsingMatrice = () => {
+    let isLastColorChocolate = false;
 
-    let startingNode = boardState.graph.getNode(Square.create({ x: 0, y: 0 }));
+    const data: SquareProps[][] = boardState.squareMatrice.map((rowOfNodes) => {
+      isLastColorChocolate = !isLastColorChocolate;
 
-    if (!startingNode) throw new Error("node not found");
+      return rowOfNodes.map((node) => {
+        const squareProp: SquareProps = {
+          node: node as Node<Square>,
+          color: isLastColorChocolate ? "wheat" : "chocolate",
+        };
 
-    let isLastColorBlack = false;
+        isLastColorChocolate = !isLastColorChocolate;
 
-    let squareOnRight;
-    let squareOnBottom;
-    while (startingNode) {
-      let rowProps: SquareProps[] = [
-        {
-          color: isLastColorBlack ? "wheat" : "chocolate",
-          square: startingNode,
-        },
-      ];
+        return squareProp;
+      });
+    });
 
-      squareOnRight = boardState.graph.getAdjacentbByWeight(
-        startingNode,
-        Directions.RIGHT
-      );
-      while (squareOnRight) {
-        rowProps.push({
-          color: isLastColorBlack ? "wheat" : "chocolate",
-          square: squareOnRight,
-        });
-
-        squareOnRight = boardState.graph.getAdjacentbByWeight(
-          squareOnRight,
-          Directions.RIGHT
-        );
-      }
-      isLastColorBlack = !isLastColorBlack;
-
-      data.push(rowProps);
-
-      squareOnBottom = boardState.graph.getAdjacentbByWeight(
-        startingNode,
-        Directions.BOTTOM
-      );
-
-      startingNode = squareOnBottom;
-    }
-
-    //console.log(boardState.graph);
     setSquareProps(data);
-
+  };
+  const initSquaresFromGraph = () => {
+    // const data: SquareProps[][] = [];
+    // let startingNode: Node<Square> | undefined = boardState.graph.entryNode;
+    // if (!startingNode) throw new Error("starting node not found");
     // let isLastColorBlack = false;
-
-    // const data = boardState.squareMatrice.map((row, rowIndex) => {
-    //   isLastColorBlack = !isLastColorBlack;
-
-    //     const square = boardState.graph.getNode(
-    //       Square.create({
-    //         x: columnIndex,
-    //         y: rowIndex,
-    //       })
-    //     ) as Square;
-    //   return row.map((column, columnIndex) => {
-
-    //     const data: SquareProps = {
+    // let squareOnRight;
+    // let squareOnBottom;
+    // while (startingNode) {
+    //   let rowProps: SquareProps[] = [
+    //     {
     //       color: isLastColorBlack ? "wheat" : "chocolate",
-    //       square,
-    //     };
-
-    //     isLastColorBlack = !isLastColorBlack;
-    //     return data;
-    //   });
-    // });
-
-    // Piece.getSquaresWithPieces().forEach((square) => {
-    //   boardState.graph.updateNodeValue(
-    //     Square.create(square.coordinates),
-    //     square
+    //       node: startingNode,
+    //     },
+    //   ];
+    //   squareOnRight = boardState.graph.getAdjacentByWeight(
+    //     startingNode,
+    //     Directions.RIGHT
     //   );
-    // });
-
-    //setSquareProps(data);
+    //   while (squareOnRight) {
+    //     rowProps.push({
+    //       color: isLastColorBlack ? "wheat" : "chocolate",
+    //       node: squareOnRight,
+    //     });
+    //     squareOnRight = boardState.graph.getAdjacentByWeight(
+    //       squareOnRight,
+    //       Directions.RIGHT
+    //     );
+    //     isLastColorBlack = !isLastColorBlack;
+    //   }
+    //   data.push(rowProps);
+    //   squareOnBottom = boardState.graph.getAdjacentByWeight(
+    //     startingNode,
+    //     Directions.BOTTOM
+    //   );
+    //   startingNode = squareOnBottom;
+    // }
+    // setSquareProps(data);
   };
 
   return (
@@ -105,9 +82,9 @@ export function Board() {
           <div key={rowIndex}>
             {row.map((squareProp, columnIndex) => (
               <SquareElement
-                key={columnIndex.toString() + rowIndex.toString()}
+                key={squareProp.node.id}
                 color={squareProp.color}
-                square={squareProp.square}
+                node={squareProp.node}
               ></SquareElement>
             ))}
           </div>

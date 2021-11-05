@@ -1,53 +1,126 @@
-import { Directions } from "../enums/directions.enum";
-
 export default class Graph<T = any> {
-  private nodes: Map<string, T> = new Map();
-  private edges: Map<string, Edge<T>[]> = new Map();
+  private _entryNode: Node<T>;
+  private _nodes: Map<number, Node<T>> = new Map();
+  private _edges: Map<number, EdgeWithNodeId[]> = new Map();
+  private lastNodeId = 1;
 
-  addNode(node: T) {
-    this.nodes.set(JSON.stringify(node), node);
+  public get entryNode() {
+    return this._entryNode;
   }
 
-  addEdge(node: T, edge: Edge<T>) {
-    if (!this.getNode(node)) {
-      throw new Error("node not found in graph");
+  constructor(firstNodeValue: T) {
+    this._entryNode = this.initNode(firstNodeValue);
+    this._nodes.set(this._entryNode.id, this._entryNode);
+  }
+
+  nodeIsInGraph(node: Node<T>) {
+    return this._nodes.has(node.id);
+  }
+
+  addNode(value: T, source: Node<T>, weight: number): Node<T> {
+    if (!this.nodeIsInGraph(source)) {
+      throw new Error(
+        "could not add node because source was not found in graph"
+      );
     }
 
-    const edgesOfNode = this.edges.get(JSON.stringify(node)) || [];
+    const newNode = this.initNode(value);
 
-    this.edges.set(JSON.stringify(node), [...edgesOfNode, edge]);
+    this._nodes.set(newNode.id, newNode);
+    this.addEdgeToNode(source, {
+      target: newNode,
+      weight,
+    });
+
+    return newNode;
   }
 
-  getNode(value: T) {
-    const node = this.nodes.get(JSON.stringify(value));
-    //if (!node) throw new Error("node not found in graph");
-    return node;
+  addEdgeToNode(node: Node<T>, edge: Edge<T>) {
+    if (!this.getNodeById(node.id)) {
+      throw new Error(
+        "could not add edge to the node because it was not found in graph"
+      );
+    }
+
+    const edges = this.getAllAdjacents(node);
+    const edgesWithNodeId = this.mapEdgeToEdgeWithNodeId(edges);
+    edgesWithNodeId.push({ nodeId: edge.target.id, weight: edge.weight });
+    this._edges.set(node.id, edgesWithNodeId);
   }
 
-  getAdjacentbByWeight(node: T, weight: number) {
-    const foundNode = this.getNode(node);
-    if (!foundNode) throw new Error("node not found in graph");
+  //   getNode(value: T) {
+  //     const node = this._nodes.get(JSON.stringify(value));
+  //     //if (!node) throw new Error("node not found in graph");
+  //     return node;
+  //   }
 
-    const edges = this.edges.get(JSON.stringify(node)) || [];
+  getAdjacentByWeight(node: Node<T>, weight: number) {
+    //const foundNode = this.getNode(node);
+    if (!this.getNodeById(node.id)) {
+      throw new Error("node not found in graph");
+    }
+    const edges = this.getAllAdjacents(node);
     return edges.find((e) => e.weight === weight)?.target;
   }
 
-  getAllNodes() {
-    return Array.from(this.nodes.values());
+  getAllAdjacents(node: Node<T>): Edge<T>[] {
+    if (!this.getNodeById(node.id)) {
+      throw new Error("node not found");
+    }
+
+    const edgeswithNodeId = this._edges.get(node.id) || [];
+    return this.mapEdgeWithNodeIdToEdge(edgeswithNodeId);
   }
 
-  updateNodeValue(node: T, newValue: T) {
-    const key = JSON.stringify(node);
-    if (key) {
-      this.nodes.delete(key);
+  getAllNodes() {
+    return Array.from(this._nodes.values());
+  }
 
-      this.nodes.set(JSON.stringify(newValue), newValue);
+  updateNodeValue(node: Node<T>, newValue: T) {
+    const nodeInGraph = this.getNodeById(node.id);
+    if (!nodeInGraph) {
+      throw new Error("cannot find a node to update");
     }
+
+    node.value = newValue;
+  }
+
+  private getNodeById(id: number): Node<T> {
+    const node = this._nodes.get(id);
+    if (!node) {
+      throw new Error("node not found");
+    }
+    return node;
+  }
+
+  private mapEdgeWithNodeIdToEdge(edges: EdgeWithNodeId[]): Edge[] {
+    return edges.map((edge) => ({
+      target: this.getNodeById(edge.nodeId),
+      weight: edge.weight,
+    }));
+  }
+
+  private mapEdgeToEdgeWithNodeId(edges: Edge[]): EdgeWithNodeId[] {
+    return edges.map((edge) => ({
+      nodeId: edge.target.id,
+      weight: edge.weight,
+    }));
+  }
+
+  private initNode(value: T): Node<T> {
+    const newNode = new Node(this.lastNodeId, value);
+    this.lastNodeId++;
+    return newNode;
   }
 }
 
-type Edge<T> = { target: T; weight: Directions };
+type EdgeWithNodeId = { nodeId: number; weight: number };
+type Edge<T = any> = { target: Node<T>; weight: number };
 
-class Node<T = any> {
-  constructor(public value?: T) {}
+export class Node<T = any> {
+  constructor(private _id: number, public value: T) {}
+
+  public get id() {
+    return this._id;
+  }
 }

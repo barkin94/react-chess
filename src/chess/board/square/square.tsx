@@ -1,21 +1,36 @@
-import React, { useContext } from "react";
+import React, { useContext, useReducer } from "react";
 import "./square.css";
-import { BoardStateContext } from "../../../chess/chess";
 import { Square } from "../../../shared/models/square.model";
 import { SquareColor } from "../../../shared/types/square-color";
+import { Node } from "../../../shared/models/graph.model";
+import { PieceElement } from "../piece/piece";
+import { BoardStateContext } from "../../chess";
+import { BoardState } from "../../../shared/contexts/board-state.context";
 
 export interface SquareProps {
-  square: Square;
+  node: Node<Square>;
   color: SquareColor;
 }
 
 export const SquareElement: React.FC<SquareProps> = (props) => {
-  const boardContext = useContext(BoardStateContext);
-  const piece = boardContext.graph.getNode(props.square)?.piece;
-  console.log(piece);
+  //const [state, dispatch] = useReducer(fn, { x: 1 });
+
+  const boardState = useContext(BoardStateContext);
+
+  const onPieceClicked = () => {
+    console.log("clicked " + props.node.value.piece?.type);
+    //boardState.graph.entryNode.value.removePiece();
+    console.log(boardState);
+  };
+
   return (
-    <div className={"square " + props.color}>
-      {piece && <div>{piece.type}</div>}
-    </div>
+    <span className={"square " + props.color}>
+      {props.node.value.piece && (
+        <PieceElement
+          piece={props.node.value.piece}
+          onClicked={onPieceClicked}
+        ></PieceElement>
+      )}
+    </span>
   );
 };

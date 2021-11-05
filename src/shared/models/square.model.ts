@@ -10,6 +10,10 @@ export class Square {
     this._piece = piece;
   }
 
+  removePiece() {
+    delete this._piece;
+  }
+
   public get piece() {
     return this._piece;
   }

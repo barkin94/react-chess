@@ -1,60 +1,67 @@
 import { Directions } from "../enums/directions.enum";
-import { Coordinates } from "../types/coordinates.type";
-import Graph from "../models/graph.model";
-import { PieceType } from "../types/piece-type";
+import Graph, { Node } from "../models/graph.model";
 import { Piece } from "../models/piece.model";
 import { Square } from "../models/square.model";
+import { Coordinates } from "../types/coordinates.type";
+import { PieceColor } from "../types/piece-color";
+import { pieceTypes } from "../types/piece-type";
 
 export class BoardState {
-  squareMatrice: 1[][];
-  graph = new Graph<Square>();
-  pieceCoordinates: {
-    self: Record<PieceType, Coordinates[]>;
-    opponent: Record<PieceType, Coordinates[]>;
-  };
+  squareMatrice: (Node<Square> | 1)[][] = [];
+  graph = new Graph<Square>(Square.create({ x: 0, y: 0 }));
+  private directionCoordinateMap = new Map<
+    Directions,
+    { x: number; y: number }
+  >();
 
   constructor() {
-    this.squareMatrice = [];
     this.setSquareMatrice();
-    this.setGraph();
-    this.pieceCoordinates = {
-      self: this.getSelfPieceCoordinates(),
-      opponent: this.getOpponentPieceCoordinates(),
-    };
-    this.placeSquares();
-    console.log(this.graph);
+    this.setDirectionCoordinateMap();
+    this.initSquares();
+    this.placePiecesOfOpponent("black");
+    this.placePiecesOfSelf("white");
+
+    //this.recursivelyInitNodesForSquares(this.graph.entryNode);
   }
 
-  private placeSquares() {
-    Piece.getSquaresWithPieces().forEach((square) => {
-      this.graph.updateNodeValue(Square.create(square.coordinates), square);
-    });
+  private setDirectionCoordinateMap() {
+    this.directionCoordinateMap.set(Directions.LEFT, { x: -1, y: 0 });
+    this.directionCoordinateMap.set(Directions.RIGHT, { x: 1, y: 0 });
+    this.directionCoordinateMap.set(Directions.BOTTOM, { x: 0, y: 1 });
+    this.directionCoordinateMap.set(Directions.TOP, { x: 0, y: -1 });
+    this.directionCoordinateMap.set(Directions.TOP_RIGHT, { x: 1, y: -1 });
+    this.directionCoordinateMap.set(Directions.BOTTOM_RIGHT, { x: 1, y: 1 });
+    this.directionCoordinateMap.set(Directions.TOP_LEFT, { x: -1, y: -1 });
+    this.directionCoordinateMap.set(Directions.BOTTOM_LEFT, { x: -1, y: 1 });
   }
 
-  private getSelfPieceCoordinates(): Record<PieceType, Coordinates[]> {
-    return {
-      pawn: Piece.getStartingPositionForSelf("pawn"),
-      bishop: Piece.getStartingPositionForSelf("bishop"),
-      rook: Piece.getStartingPositionForSelf("rook"),
-      king: Piece.getStartingPositionForSelf("king"),
-      knight: Piece.getStartingPositionForSelf("knight"),
-      queen: Piece.getStartingPositionForSelf("queen"),
-    };
+  private placePiecesOfOpponent(color: PieceColor) {
+    for (let pieceType of pieceTypes) {
+      Piece.getStartingPositionsForOpponent(pieceType).forEach(
+        (coordinates) => {
+          const node = this.squareMatrice[coordinates.y][
+            coordinates.x
+          ] as Node<Square>;
+          const piece = Piece.initPiece(pieceType, color);
+          node.value.placePiece(piece);
+        }
+      );
+    }
   }
 
-  private getOpponentPieceCoordinates(): Record<PieceType, Coordinates[]> {
-    return {
-      pawn: Piece.getStartingPositionForOpponent("pawn"),
-      bishop: Piece.getStartingPositionForOpponent("bishop"),
-      rook: Piece.getStartingPositionForOpponent("rook"),
-      king: Piece.getStartingPositionForOpponent("king"),
-      knight: Piece.getStartingPositionForOpponent("knight"),
-      queen: Piece.getStartingPositionForOpponent("queen"),
-    };
+  private placePiecesOfSelf(color: PieceColor) {
+    for (let pieceType of pieceTypes) {
+      Piece.getStartingPositionsForSelf(pieceType).forEach((coordinates) => {
+        const node = this.squareMatrice[coordinates.y][
+          coordinates.x
+        ] as Node<Square>;
+        const piece = Piece.initPiece(pieceType, color);
+        node.value.placePiece(piece);
+      });
+    }
   }
 
   private setSquareMatrice() {
-    this.squareMatrice = [];
     for (let y = 0; y < 8; y++) {
       this.squareMatrice.push([]);
 
@@ -64,118 +71,97 @@ export class BoardState {
     }
   }
 
-  private setGraph() {
-    this.setNodes();
-    this.setEdges();
-  }
+  addAdjacentOrEdgeIfAvailable(
+    sourceNode: Node<Square>,
+    direction: Directions
+  ) {
+    const coordinates = this.getTargetSquareCoordinates(sourceNode, direction);
+    if (!coordinates) {
+      return;
+    }
 
-  private setNodes() {
-    for (let y = 0; y < this.squareMatrice.length; y++) {
-      for (let x = 0; x < this.squareMatrice[y].length; x++) {
-        this.graph.addNode(Square.create({ x, y }));
-      }
+    if (this.squareMatrice[coordinates.y][coordinates.x] === 1) {
+      const squareData = Square.create({
+        x: coordinates.x,
+        y: coordinates.y,
+      });
+      const addedNode = this.graph.addNode(squareData, sourceNode, direction);
+      this.squareMatrice[coordinates.y][coordinates.x] = addedNode;
+    } else {
+      this.graph.addEdgeToNode(sourceNode, {
+        target: this.squareMatrice[coordinates.y][
+          coordinates.x
+        ] as Node<Square>,
+        weight: direction,
+      });
     }
   }
 
-  private setEdges() {
-    for (let node of this.graph.getAllNodes()) {
-      const rightNode = this.graph.getNode(
-        Square.create({
-          x: node.coordinates.x + 1,
-          y: node.coordinates.y,
-        })
-      );
-      if (rightNode) {
-        this.graph.addEdge(node, {
-          target: rightNode,
-          weight: Directions.RIGHT,
-        });
-      }
+  private getTargetSquareCoordinates(
+    node: Node<Square>,
+    direction: Directions
+  ): Coordinates | undefined {
+    const result = this.directionCoordinateMap.get(direction);
 
-      const leftNode = this.graph.getNode(
-        Square.create({
-          x: node.coordinates.x - 1,
-          y: node.coordinates.y,
-        })
-      );
-      if (leftNode) {
-        this.graph.addEdge(node, { target: leftNode, weight: Directions.LEFT });
-      }
+    if (!result) {
+      throw new Error("direction not found in directionCoordinateMap");
+    }
+    const nodeCoordinates = node.value.coordinates;
+    const rowAtIndex = this.squareMatrice[nodeCoordinates.y + result.y];
 
-      const topNode = this.graph.getNode(
-        Square.create({
-          x: node.coordinates.x,
-          y: node.coordinates.y - 1,
-        })
-      );
-      if (topNode) {
-        this.graph.addEdge(node, { target: topNode, weight: Directions.TOP });
-      }
+    if (!rowAtIndex) {
+      return;
+    }
 
-      const bottomNode = this.graph.getNode(
-        Square.create({
-          x: node.coordinates.x,
-          y: node.coordinates.y + 1,
-        })
-      );
-      if (bottomNode) {
-        this.graph.addEdge(node, {
-          target: bottomNode,
-          weight: Directions.BOTTOM,
-        });
-      }
+    const targetSquare = rowAtIndex[nodeCoordinates.x + result.x];
 
-      const topRightNode = this.graph.getNode(
-        Square.create({
-          x: node.coordinates.x + 1,
-          y: node.coordinates.y - 1,
-        })
-      );
-      if (topRightNode) {
-        this.graph.addEdge(node, {
-          target: topRightNode,
-          weight: Directions.TOP_RIGHT,
-        });
-      }
+    if (!targetSquare) {
+      return;
+    }
 
-      const topLeftNode = this.graph.getNode(
-        Square.create({
-          x: node.coordinates.x - 1,
-          y: node.coordinates.y - 1,
-        })
-      );
-      if (topLeftNode) {
-        this.graph.addEdge(node, {
-          target: topLeftNode,
-          weight: Directions.TOP_LEFT,
-        });
-      }
+    return { x: nodeCoordinates.x + result.x, y: nodeCoordinates.y + result.y };
+  }
 
-      const bottomRightNode = this.graph.getNode(
-        Square.create({
-          x: node.coordinates.x + 1,
-          y: node.coordinates.y + 1,
-        })
-      );
-      if (bottomRightNode) {
-        this.graph.addEdge(node, {
-          target: bottomRightNode,
-          weight: Directions.BOTTOM_RIGHT,
-        });
-      }
+  initSquares() {
+    this.squareMatrice[0][0] = this.graph.entryNode;
 
-      const bottomLeftNode = this.graph.getNode(
-        Square.create({
-          x: node.coordinates.x - 1,
-          y: node.coordinates.y + 1,
-        })
-      );
-      if (bottomLeftNode) {
-        this.graph.addEdge(node, {
-          target: bottomLeftNode,
-          weight: Directions.BOTTOM_LEFT,
-        });
+    for (let y of this.squareMatrice) {
+      for (let x of y) {
+        this.initNodesForSquares(x as Node<Square>);
       }
     }
+  }
+  //   private recursivelyInitNodesForSquares(
+  //     node: Node<Square>,
+  //     excludedNode?: Node<Square>
+  //   ) {
+  //     this.addAdjacentOrEdgeIfAvailable(node, Directions.RIGHT);
+  //     this.addAdjacentOrEdgeIfAvailable(node, Directions.LEFT);
+  //     this.addAdjacentOrEdgeIfAvailable(node, Directions.TOP);
+  //     this.addAdjacentOrEdgeIfAvailable(node, Directions.BOTTOM);
+  //     this.addAdjacentOrEdgeIfAvailable(node, Directions.TOP_RIGHT);
+  //     this.addAdjacentOrEdgeIfAvailable(node, Directions.TOP_LEFT);
+  //     this.addAdjacentOrEdgeIfAvailable(node, Directions.BOTTOM_RIGHT);
+  //     this.addAdjacentOrEdgeIfAvailable(node, Directions.BOTTOM_LEFT);
+
+  //     let adjacents = this.graph.getAllAdjacents(node);
+  //     if (excludedNode) {
+  //       adjacents = adjacents.filter(
+  //         (adjacent) => adjacent.target.id !== excludedNode.id
+  //       );
+  //     }
+  //     for (let adjacent of adjacents) {
+  //       this.recursivelyInitNodesForSquares(adjacent.target, node);
+  //     }
+  //   }
+  private initNodesForSquares(node: Node<Square>) {
+    this.addAdjacentOrEdgeIfAvailable(node, Directions.RIGHT);
+    this.addAdjacentOrEdgeIfAvailable(node, Directions.LEFT);
+    this.addAdjacentOrEdgeIfAvailable(node, Directions.TOP);
+    this.addAdjacentOrEdgeIfAvailable(node, Directions.BOTTOM);
+    this.addAdjacentOrEdgeIfAvailable(node, Directions.TOP_RIGHT);
+    this.addAdjacentOrEdgeIfAvailable(node, Directions.TOP_LEFT);
+    this.addAdjacentOrEdgeIfAvailable(node, Directions.BOTTOM_RIGHT);
+    this.addAdjacentOrEdgeIfAvailable(node, Directions.BOTTOM_LEFT);
   }
 }
