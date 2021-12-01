@@ -12,3 +12,8 @@
 .square.wheat {
   background-color: wheat;
 }
+
+.square.available {
+	background-color: green !important;
+	cursor: pointer;
+}

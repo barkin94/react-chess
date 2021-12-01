@@ -1,38 +1,61 @@
-import React, { useContext, useReducer } from "react";
+import React from "react";
 import "./square.css";
-import { Square as SquareModel } from "../../../domain/chess/square";
-import { SquareColor } from "../../../shared/types/square-color";
-import { Node } from "../../../shared/models/graph.model";
-import { PieceElement } from "../../piece/piece";
-import { BoardStateContext } from "../../chess";
-import { BoardState } from "../../../shared/contexts/board-state.context";
+import { Square as SquareModel } from "../../../domain/chess/board/square.class";
+import { Piece } from "../../piece/piece";
+import { Piece as PieceModel } from "../../../domain/chess/piece/piece.abstract";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../redux/store";
+import { getPiecePropsFromId } from "../../piece/piece-helper";
+import { move, squareClicked, toggleAvailableMoves } from "../../../redux/reducers/board-state";
+import { board } from "../../../domain/domain";
 
 export interface SquareProps {
-  //node: Node<SquareModel>;
-  data: SquareModel;
+	square: SquareModel;
+	isHighlighted: boolean;
 }
 
 export const Square: React.FC<SquareProps> = (props) => {
-  //const [state, dispatch] = useReducer(fn, { x: 1 });
+	const dispatch = useDispatch<AppDispatch>();
 
-  const onPieceClicked = () => {
-    console.log("clicked " + props.data.piece?.type);
-    console.log();
-    //boardState.graph.entryNode.value.removePiece();
-  };
+	const pieceId = useSelector((state: RootState) => state.boardState.pieceLocations[props.square.id]);
 
-  const getColorClass = () => {
-    return props.data.color === "black" ? "chocolate" : "wheat";
-  };
+	const pieceProps = pieceId ? getPiecePropsFromId(pieceId) : undefined;
 
-  return (
-    <span className={"square " + getColorClass()}>
-      {props.data.piece && (
-        <PieceElement
-          piece={props.data.piece}
-          onClicked={onPieceClicked}
-        ></PieceElement>
-      )}
-    </span>
-  );
+	const onPieceClicked = () => {
+		if (!pieceId) return;
+
+		dispatch(toggleAvailableMoves(pieceId));
+	};
+
+	const onSquareClicked = () => {
+		//dispatch(move({ targetSquareId: props.square.id }))
+		dispatch(squareClicked({ squareId: props.square.id }));
+	};
+
+	const getClassName = (): string => {
+		const color = props.square.color === "black" ? "chocolate" : "wheat";
+
+		let className = "square " + color;
+
+		if (props.isHighlighted) {
+			className = className + " available";
+		}
+
+		return className;
+	};
+
+	return (
+		<span className={getClassName()} onClick={onSquareClicked}>
+			{pieceProps && (
+				<Piece
+					id={pieceProps.id}
+					type={pieceProps.type}
+					color={pieceProps.color}
+					//onClicked={onPieceClicked}
+				></Piece>
+			)}
+		</span>
+	);
 };
+
+type SquareColor = "chocolate" | "wheat";

@@ -2,13 +2,16 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import { Chess } from "./components/chess";
+import App from "./components/app/app";
+import { board } from "./domain/domain";
+
+const startingData = board.startingData;
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Chess />
-  </React.StrictMode>,
-  document.getElementById("root")
+	<React.StrictMode>
+		<App squares={startingData.squares} pieces={startingData.pieces} pieceLocations={startingData.pieceLocations} />
+	</React.StrictMode>,
+	document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
