@@ -2,7 +2,7 @@ import { Square } from "../board/square.class";
 import { Coordinates } from "./types/coordinates.type";
 import { PieceColor } from "./types/piece-color";
 
-const collidesWithSameColoredPiece = (square: Square, color: PieceColor) => {
+export const collidesWithSameColoredPiece = (square: Square, color: PieceColor) => {
 	return square.piece && square.piece.color === color;
 };
 

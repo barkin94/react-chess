@@ -45,13 +45,13 @@ export const Square: React.FC<SquareProps> = (props) => {
 	};
 
 	return (
-		<span className={getClassName()} onClick={onSquareClicked}>
+		<span className={getClassName()} /*onClick={onSquareClicked}*/>
 			{pieceProps && (
 				<Piece
 					id={pieceProps.id}
 					type={pieceProps.type}
 					color={pieceProps.color}
-					//onClicked={onPieceClicked}
+					onClicked={onPieceClicked}
 				></Piece>
 			)}
 		</span>
