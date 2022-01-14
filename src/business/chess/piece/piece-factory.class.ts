@@ -1,5 +1,5 @@
-import { PieceColor } from "../shared/types/piece-color";
-import { PieceType, pieceTypes } from "../shared/types/piece-type";
+import { PieceColor } from "../shared/types/piece-color.type";
+import { PieceType, pieceTypes } from "../shared/types/piece-type.type";
 import { Bishop } from "./bishop.class";
 import { King } from "./king.class";
 import { Knight } from "./knight.class";
@@ -31,7 +31,7 @@ export class PieceFactory {
 		return pieces;
 	}
 
-	private initPiece(pieceType: PieceType, color: PieceColor, id: string) {
+	initPiece(pieceType: PieceType, color: PieceColor, id: string) {
 		switch (pieceType) {
 			case "pawn":
 				return new Pawn(color, id);
@@ -46,7 +46,7 @@ export class PieceFactory {
 			case "rook":
 				return new Rook(color, id);
 			default:
-				return new King(color, id);
+				return new Pawn(color, id);
 		}
 	}
 }

@@ -3,13 +3,15 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import App from "./components/app/app";
-import { board } from "./domain/domain";
-
-const startingData = board.startingData;
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import { initSocketIoConnection } from "./socket-io";
 
 ReactDOM.render(
 	<React.StrictMode>
-		<App squares={startingData.squares} pieces={startingData.pieces} pieceLocations={startingData.pieceLocations} />
+		<Provider store={store}>
+			<App />
+		</Provider>
 	</React.StrictMode>,
 	document.getElementById("root")
 );
@@ -18,3 +20,4 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+initSocketIoConnection();

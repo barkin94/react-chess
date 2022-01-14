@@ -1,18 +1,25 @@
 import { Square } from "./square.class";
-import { PieceColor } from "../shared/types/piece-color";
-import { PieceType } from "../shared/types/piece-type";
+import { PieceColor } from "../shared/types/piece-color.type";
+import { PieceType } from "../shared/types/piece-type.type";
 import { PieceFactory } from "../piece/piece-factory.class";
 import { Coordinates } from "../shared/types/coordinates.type";
 import { Piece } from "../piece/piece.abstract";
+import { SquareColor } from "../shared/types/square-color.type";
 
 export class Board {
 	private _squares: Square[][] = [[], [], [], [], [], [], [], []];
 	private _pieceIdToEntityMap = new Map<string, Piece>();
 	private _squareIdToEntityMap = new Map<string, Square>();
-	//private _pieceLocations = new Map<string, string>();
+	private _pieceLocations = new Map<Square, Piece>();
+	private _playerColor: PieceColor;
+	private _pieceFactory: PieceFactory;
+	private _isStartingFirst: boolean;
 
-	constructor(private _playerColor: PieceColor, private _pieceFactory: PieceFactory) {
-		this.initSquares();
+	constructor(data: { pieceFactory: PieceFactory; playerColor: PieceColor; isStartingFirst: boolean }) {
+		this._pieceFactory = data.pieceFactory;
+		this._playerColor = data.playerColor;
+		this._isStartingFirst = data.isStartingFirst;
+		this.initSquares(this._playerColor);
 
 		// Place pieces of self
 		this.initPieces(this._playerColor, "bottom");
@@ -21,14 +28,26 @@ export class Board {
 		this.initPieces(this._playerColor === "black" ? "white" : "black", "top");
 	}
 
-	get pieceLocations(): { [squareId: string]: string | undefined } {
+	get pieces() {
+		return Object.freeze(Array.from(this._pieceIdToEntityMap.values()));
+	}
+
+	get squares() {
+		return Object.freeze(this._squares);
+	}
+
+	getPieceLocations(): StartingData["pieceLocations"] {
 		const result: { [squareId: string]: string } = {};
 		this.pieces.forEach((piece) => (result[piece.squareId as string] = piece.id));
 		return result;
 	}
 
-	get startingData(): StartingData {
-		const squares = this.squares;
+	getStartingData(): StartingData {
+		const squareData: StartingData["squareData"] = [];
+		this.squares.forEach((row) => {
+			squareData.push(row.map((square) => ({ id: square.id, color: square.color })));
+		});
+
 		const pieces = this.pieces;
 		const pieceLocations: { [squareId: string]: string } = {};
 
@@ -49,29 +68,14 @@ export class Board {
 		});
 
 		return {
-			squares,
-			pieces,
+			squareData,
 			pieceLocations,
 			playerColor: this._playerColor,
+			isStartingFirst: this._isStartingFirst,
 		};
 	}
 
-	get pieces() {
-		return Object.freeze(Array.from(this._pieceIdToEntityMap.values()));
-	}
-
-	get squares() {
-		return Object.freeze(this._squares);
-	}
-
 	getAvailableMoves(piece: Piece) {
-		// const squareId = this._pieceLocations.get(piece.id);
-		// if (!squareId) throw new Error("piece is not on the board");
-
-		// const pieceLocation = this._squareIdToEntityMap.get(squareId);
-		// if (!pieceLocation) throw new Error("square matching with square id not found");
-		// return piece.getAvailableMoves(pieceLocation.coordinates, this._squares);
-
 		if (!piece.squareId) throw new Error("piece is not on the board");
 
 		const currentLocation = this.getSquareById(piece.squareId);
@@ -80,28 +84,34 @@ export class Board {
 		return piece.getAvailableMoves(currentLocation.coordinates, this._squares);
 	}
 
-	movePiece(pieceId: string, targetSquareId: string) {
+	canPieceMakeMove(pieceId: string, targetSquareId: string) {
 		const piece = this.getPieceById(pieceId);
-
 		if (!piece.squareId) throw new Error("piece is not on the board");
+		const currentSquare = this.getSquareById(piece.squareId);
 
 		const targetSquare = this.getSquareById(targetSquareId);
-
-		const currentSquare = this.getSquareById(piece.squareId);
 		const availableMoves = piece.getAvailableMoves(currentSquare.coordinates, this._squares);
-
 		const canMoveToLocation = availableMoves.find(
 			(move) => move.x === targetSquare.coordinates.x && move.y === targetSquare.coordinates.y
 		);
 
-		if (!canMoveToLocation) {
-			throw new Error("can't make that move");
-		}
+		return canMoveToLocation;
+	}
+
+	movePiece(pieceId: string, targetSquareId: string) {
+		const piece = this.getPieceById(pieceId);
+		if (!piece.squareId) throw new Error("piece is not on the board");
+
+		const currentSquare = this.getSquareById(piece.squareId);
+		this._pieceLocations.delete(currentSquare);
 
 		piece.squareId = targetSquareId;
-		// currentSquare.removePiece();
-		// targetSquare.placePiece(piece);
-		//this._pieceLocations.set(pieceId, targetSquareId);
+		const targetSquare = this.getSquareById(targetSquareId);
+
+		const opponentPieceOnTargetSquare = this._pieceLocations.get(targetSquare);
+		if (opponentPieceOnTargetSquare) delete opponentPieceOnTargetSquare.squareId;
+
+		this._pieceLocations.set(targetSquare, piece);
 	}
 
 	getSquareById(id: string) {
@@ -121,14 +131,14 @@ export class Board {
 	}
 
 	removePieceFromBoard(piece: Piece) {
-		//this._pieceLocations.delete(piece.id);
 		delete piece.squareId;
 	}
 
-	private initSquares() {
+	private initSquares(playerColor: PieceColor) {
 		for (let y = 0; y < 8; y++) {
 			for (let x = 0; x < 8; x++) {
-				const square = Square.create({ x, y });
+				const id = playerColor === "black" ? 8 * y + x : 64 - (8 * y + (8 - x));
+				const square = Square.create(`${id}`, { x, y });
 				this._squares[y][x] = square;
 				this._squareIdToEntityMap.set(square.id, square);
 			}
@@ -152,40 +162,40 @@ export class Board {
 			const square = this._squares[coordinate.y][coordinate.x];
 			//square.placePiece(piece);
 			piece.squareId = square.id;
+			this._pieceLocations.set(square, piece);
 			takenSquareIds.push(square.id);
-			//this._pieceLocations.set(piece.id, square.id);
 		});
 	}
 
 	private getStartingPositions(piece: PieceType, alignment: Alignment): Coordinates[] {
-		const yIndexOfLine1 = alignment === "top" ? 0 : 7;
-		const yIndexOfLine2 = alignment === "top" ? 1 : 6;
+		const yIndexOfPawnsLine = alignment === "top" ? 1 : 6;
+		const yIndexOfOthersLine = alignment === "top" ? 0 : 7;
 
 		switch (piece) {
 			case "pawn":
 				return [0, 1, 2, 3, 4, 5, 6, 7].map((number) => ({
 					x: number,
-					y: yIndexOfLine2,
+					y: yIndexOfPawnsLine,
 				}));
 			case "rook":
 				return [
-					{ x: 0, y: yIndexOfLine1 },
-					{ x: 7, y: yIndexOfLine1 },
+					{ x: 0, y: yIndexOfOthersLine },
+					{ x: 7, y: yIndexOfOthersLine },
 				];
 			case "knight":
 				return [
-					{ x: 1, y: yIndexOfLine1 },
-					{ x: 6, y: yIndexOfLine1 },
+					{ x: 1, y: yIndexOfOthersLine },
+					{ x: 6, y: yIndexOfOthersLine },
 				];
 			case "bishop":
 				return [
-					{ x: 2, y: yIndexOfLine1 },
-					{ x: 5, y: yIndexOfLine1 },
+					{ x: 2, y: yIndexOfOthersLine },
+					{ x: 5, y: yIndexOfOthersLine },
 				];
 			case "queen":
-				return [{ x: 3, y: yIndexOfLine1 }];
+				return [{ x: 3, y: yIndexOfOthersLine }];
 			case "king":
-				return [{ x: 4, y: yIndexOfLine1 }];
+				return [{ x: 4, y: yIndexOfOthersLine }];
 			default:
 				throw new Error("no matching piece found");
 		}
@@ -195,8 +205,8 @@ export class Board {
 type Alignment = "top" | "bottom";
 
 export type StartingData = {
-	squares: readonly Square[][];
-	pieces: readonly Piece[];
+	squareData: { id: string; color: SquareColor }[][];
 	pieceLocations: { [squareId: string]: string };
 	playerColor: PieceColor;
+	isStartingFirst: boolean;
 };

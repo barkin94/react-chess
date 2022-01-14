@@ -1,6 +1,6 @@
 import { Coordinates } from "../shared/types/coordinates.type";
-import { PieceColor } from "../shared/types/piece-color";
-import { PieceType } from "../shared/types/piece-type";
+import { PieceColor } from "../shared/types/piece-color.type";
+import { PieceType } from "../shared/types/piece-type.type";
 import { Square } from "../board/square.class";
 
 export abstract class Piece {
@@ -10,7 +10,7 @@ export abstract class Piece {
 
 	abstract getAvailableMoves(location: Coordinates, squareLayout: Square[][]): Coordinates[];
 
-	abstract readonly type: PieceType;
+	abstract type: PieceType;
 
 	get id() {
 		return this._id;

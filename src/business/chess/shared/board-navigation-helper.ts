@@ -1,6 +1,6 @@
 import { Square } from "../board/square.class";
 import { Coordinates } from "./types/coordinates.type";
-import { PieceColor } from "./types/piece-color";
+import { PieceColor } from "./types/piece-color.type";
 
 export const collidesWithSameColoredPiece = (square: Square, color: PieceColor) => {
 	return square.piece && square.piece.color === color;
@@ -232,6 +232,26 @@ const Left = (color: PieceColor, location: Coordinates, squares: Square[][], all
 };
 
 const Right = (color: PieceColor, location: Coordinates, squares: Square[][], allTheWay = false): Coordinates[] => {
+	let coordinates: Coordinates[] = [];
+	let nextYCoordinate = location.y;
+	let nextXCoordinate = location.x + 1;
+
+	if (allTheWay) {
+		while (nextXCoordinate < 8 && !collidesWithSameColoredPiece(squares[nextYCoordinate][nextXCoordinate], color)) {
+			coordinates.push({ x: nextXCoordinate, y: nextYCoordinate });
+			nextXCoordinate++;
+		}
+		return coordinates;
+	}
+
+	if (nextXCoordinate < 8 && !collidesWithSameColoredPiece(squares[nextYCoordinate][nextXCoordinate], color)) {
+		coordinates.push({ x: nextXCoordinate, y: nextYCoordinate });
+	}
+
+	return coordinates;
+};
+
+const navigate = (color: PieceColor, location: Coordinates, squares: Square[][], allTheWay = false) => {
 	let coordinates: Coordinates[] = [];
 	let nextYCoordinate = location.y;
 	let nextXCoordinate = location.x + 1;

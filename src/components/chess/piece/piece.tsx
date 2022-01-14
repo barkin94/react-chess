@@ -1,6 +1,5 @@
-import { Piece as PieceModel } from "../../domain/chess/piece/piece.abstract";
-import { PieceColor } from "../../domain/chess/shared/types/piece-color";
-import { PieceType } from "../../domain/chess/shared/types/piece-type";
+import { PieceColor } from "../../../business/chess/shared/types/piece-color.type";
+import { PieceType } from "../../../business/chess/shared/types/piece-type.type";
 import "./piece.css";
 
 export interface PieceProps {
@@ -20,7 +19,6 @@ const icons: { [key in PieceType]: { [key in PieceColor]: string } } = {
 };
 
 export const Piece: React.FC<PieceProps> = (props) => {
-	//const [state, dispatch] = useReducer(pieceClick, initialState);
 	return (
 		<span
 			onClick={props.onClicked}
