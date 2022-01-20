@@ -5,8 +5,8 @@ import { SearchingMatch } from "../searching-match/searching-match";
 import { Chess } from "../chess/chess";
 
 export const App: React.FC = () => {
-	const isConnected = useSelector((state: RootState) => state.gameState.isConnected);
-	const matchStartingData = useSelector((state: RootState) => state.gameState.matchStartingData);
+	const isConnected = useSelector((state: RootState) => state.game.isConnected);
+	const matchStartingData = useSelector((state: RootState) => state.game.matchStartingData);
 
 	const getView = () => {
 		if (!isConnected) return null;

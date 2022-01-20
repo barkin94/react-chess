@@ -1,5 +1,5 @@
-import { PieceColor } from "../shared/types/piece-color.type";
-import { PieceType, pieceTypes } from "../shared/types/piece-type.type";
+import { PieceColor } from "../../shared/types/piece-color.type";
+import { PieceType, pieceTypes } from "../../shared/types/piece-type.type";
 import { Bishop } from "./bishop.class";
 import { King } from "./king.class";
 import { Knight } from "./knight.class";

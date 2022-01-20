@@ -1,6 +1,6 @@
-import { Coordinates } from "../shared/types/coordinates.type";
-import { PieceColor } from "../shared/types/piece-color.type";
-import { PieceType } from "../shared/types/piece-type.type";
+import { Coordinates } from "../../shared/types/coordinates.type";
+import { PieceColor } from "../../shared/types/piece-color.type";
+import { PieceType } from "../../shared/types/piece-type.type";
 import { Square } from "../board/square.class";
 
 export abstract class Piece {

@@ -1,4 +1,4 @@
-import { PieceType } from "../../../business/chess/shared/types/piece-type.type";
+import { PieceType } from "../../../domain/shared/types/piece-type.type";
 import { PieceProps } from "./piece";
 
 export const getPiecePropsViaId = (id: string): PieceProps => {

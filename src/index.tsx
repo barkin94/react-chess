@@ -5,7 +5,8 @@ import reportWebVitals from "./reportWebVitals";
 import App from "./components/app/app";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
-import { initSocketIoConnection } from "./socket-io";
+import { initSocket } from "./socket/socket-io";
+import { initServerEvents } from "./socket/socket-io-events";
 
 ReactDOM.render(
 	<React.StrictMode>
@@ -20,4 +21,7 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
-initSocketIoConnection();
+
+const socket = initSocket();
+initServerEvents(socket, store);
+//initSocketIoConnection();

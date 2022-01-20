@@ -4,10 +4,9 @@ import { Piece } from "../../piece/piece";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../redux/store";
 import { getPiecePropsViaId } from "../../piece/piece-helper";
-import { move, toggleOffAvailableMoves, toggleOnAvailableMoves } from "../../../../redux/reducers/board-state";
-import { SquareColor } from "../../../../business/chess/shared/types/square-color.type";
-import { getSocketIoConnection } from "../../../../socket-io";
-import { waitingForTurn } from "../../../../redux/reducers/game-state";
+import { toggleOffAvailableMoves, toggleOnAvailableMoves } from "../../../../redux/reducers/board";
+import { moveSelectedPieceToTargetSquare } from "../../../../redux/thunks/move-selected-piece-to-target-square.thunk";
+import { SquareColor } from "../../../../domain/shared/types/square-color.type";
 
 export interface SquareProps {
 	id: string;
@@ -18,10 +17,10 @@ export interface SquareProps {
 export const Square: React.FC<SquareProps> = (props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const pieceId = useSelector((state: RootState) => state.boardState.pieceLocations[props.id]);
-	const playerColor = useSelector((state: RootState) => state.gameState.matchStartingData?.playerColor);
+	const pieceId = useSelector((state: RootState) => state.board.pieceLocations[props.id]);
+	const playerColor = useSelector((state: RootState) => state.game.matchStartingData?.playerColor);
 
-	const selectedPieceId = useSelector((state: RootState) => state.boardState.selectedPieceId);
+	const selectedPieceId = useSelector((state: RootState) => state.board.selectedPieceId);
 	const pieceProps = pieceId ? getPiecePropsViaId(pieceId) : null;
 
 	const onPieceClicked = () => {
@@ -32,11 +31,7 @@ export const Square: React.FC<SquareProps> = (props) => {
 
 	const onSquareClicked = () => {
 		if (!props.isHighlighted) return;
-
-		dispatch(move({ targetSquareId: props.id }));
-		getSocketIoConnection().emit("move", { pieceId: selectedPieceId, targetSquareId: props.id });
-		dispatch(toggleOffAvailableMoves());
-		dispatch(waitingForTurn(true));
+		dispatch(moveSelectedPieceToTargetSquare(props.id));
 	};
 
 	const getClassName = (): string => {
@@ -53,7 +48,7 @@ export const Square: React.FC<SquareProps> = (props) => {
 
 	// When waiting for the player's turn, click events on the squares are disabled
 	//----------------------------------------------------------------------------------
-	const isOpponentsTurn = useSelector((state: RootState) => state.gameState.waitingTurn);
+	const isOpponentsTurn = useSelector((state: RootState) => state.game.waitingTurn);
 	const squareElemRef = useRef(null);
 	useEffect(() => {
 		(squareElemRef.current as unknown as HTMLElement).onclick = (event) => {

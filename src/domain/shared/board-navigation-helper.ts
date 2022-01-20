@@ -1,4 +1,4 @@
-import { Square } from "../board/square.class";
+import { Square } from "../entities/board/square.class";
 import { Coordinates } from "./types/coordinates.type";
 import { PieceColor } from "./types/piece-color.type";
 

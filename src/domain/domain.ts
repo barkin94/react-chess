@@ -1,6 +1,7 @@
-import { Board } from "./chess/board/board.class";
-import { PieceFactory } from "./chess/piece/piece-factory.class";
-import { PieceColor } from "./chess/shared/types/piece-color.type";
+import { BoardInitializer } from "./entities/board/board-initializer.class";
+import { Board } from "./entities/board/board.class";
+import { PieceFactory } from "./entities/piece/piece-factory.class";
+import { PieceColor } from "./shared/types/piece-color.type";
 
 let board: Board;
 
@@ -10,8 +11,7 @@ export function initBoardData(playerColor: PieceColor, isStartingFirst: boolean)
 	}
 
 	board = new Board({
-		pieceFactory: new PieceFactory(),
-		playerColor,
+		boardInitializer: new BoardInitializer(new PieceFactory(), playerColor),
 		isStartingFirst,
 	});
 

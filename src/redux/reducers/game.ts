@@ -1,11 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { StartingData } from "../../business/chess/board/board.class";
+import { StartingData } from "../../domain/entities/board/board.class";
+import { moveOpponentsPieceToTargetSquare } from "../thunks/move-opponents-piece-to-target-square.thunk";
+import { moveSelectedPieceToTargetSquare } from "../thunks/move-selected-piece-to-target-square.thunk";
 
 type GameState = {
 	isConnected: boolean;
 	forfeitWin: boolean;
 	matchStartingData: StartingData | null;
 	waitingTurn: boolean;
+	yourDeadPieces: string[];
+	opponentsDeadPieces: string[];
 };
 
 const initialState: GameState = {
@@ -13,6 +17,8 @@ const initialState: GameState = {
 	isConnected: false,
 	matchStartingData: null,
 	waitingTurn: false,
+	yourDeadPieces: [],
+	opponentsDeadPieces: [],
 };
 
 const gameSlice = createSlice({
@@ -32,6 +38,21 @@ const gameSlice = createSlice({
 		waitingForTurn: (state, action: PayloadAction<boolean>) => {
 			state.waitingTurn = action.payload;
 		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(moveSelectedPieceToTargetSquare.fulfilled, (state, action) => {
+			state.waitingTurn = true;
+			if (action.payload.killedPiece) {
+				state.opponentsDeadPieces.push(action.payload.killedPiece.id);
+			}
+		});
+
+		builder.addCase(moveOpponentsPieceToTargetSquare.fulfilled, (state, action) => {
+			state.waitingTurn = false;
+			if (action.payload.killedPiece) {
+				state.yourDeadPieces.push(action.payload.killedPiece.id);
+			}
+		});
 	},
 });
 

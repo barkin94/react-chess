@@ -1,5 +1,5 @@
-import { PieceColor } from "../../../business/chess/shared/types/piece-color.type";
-import { PieceType } from "../../../business/chess/shared/types/piece-type.type";
+import { PieceColor } from "../../../domain/shared/types/piece-color.type";
+import { PieceType } from "../../../domain/shared/types/piece-type.type";
 import "./piece.css";
 
 export interface PieceProps {

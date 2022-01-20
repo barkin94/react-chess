@@ -1,7 +1,7 @@
-import { Coordinates } from "../shared/types/coordinates.type";
 import { Square } from "../board/square.class";
 import { Piece } from "./piece.abstract";
-import { collidesWithSameColoredPiece } from "../shared/board-navigation-helper";
+import { collidesWithSameColoredPiece } from "../../shared/board-navigation-helper";
+import { Coordinates } from "../../shared/types/coordinates.type";
 
 export class Knight extends Piece {
 	readonly type = "knight";

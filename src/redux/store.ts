@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import boardState from "./reducers/board-state";
-import gameState from "./reducers/game-state";
+import board from "./reducers/board";
+import game from "./reducers/game";
 
 export const store = configureStore({
 	reducer: {
-		boardState,
-		gameState,
+		board,
+		game,
 	},
 });
 
