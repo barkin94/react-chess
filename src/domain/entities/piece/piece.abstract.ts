@@ -8,7 +8,7 @@ export abstract class Piece {
 
 	constructor(public color: PieceColor, private _id: string) {}
 
-	abstract getAvailableMoves(location: Coordinates, squareLayout: Square[][]): Coordinates[];
+	abstract getAvailableMoves(location: Coordinates, squareLayout: readonly Square[][]): Coordinates[];
 
 	abstract type: PieceType;
 

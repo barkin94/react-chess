@@ -3,7 +3,7 @@ import { Square } from "./square/square";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import React from "react";
-import { StartingData } from "../../../domain/entities/board/board.class";
+import { StartingData } from "../../../redux/reducers/board";
 
 export const Board: React.FC<{ squareData: StartingData["squareData"] }> = (props) => {
 	const highlightedSquares = useSelector((state: RootState) => state.board.highlightedSquares);

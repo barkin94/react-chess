@@ -4,16 +4,19 @@ import { Coordinates } from "../../shared/types/coordinates.type";
 import { PieceColor, pieceColors } from "../../shared/types/piece-color.type";
 import { PieceType, pieceTypes } from "../../shared/types/piece-type.type";
 import { Square } from "./square.class";
+import { inject, injectable } from "inversify";
 
 type Alignment = "top" | "bottom";
 export type PieceStartingLocations = {
 	[key in PieceColor]: Map<Piece, Coordinates>;
 };
 
+@injectable()
 export class BoardInitializer {
-	constructor(private _pieceFactory: PieceFactory, public _playerColor: PieceColor) {}
+	@inject(PieceFactory)
+	private _pieceFactory!: PieceFactory;
 
-	getPieceStartingLocations(): PieceStartingLocations {
+	getPieceStartingLocations(playerColor: PieceColor): PieceStartingLocations {
 		const result: PieceStartingLocations = {
 			white: new Map<Piece, Coordinates>(),
 			black: new Map<Piece, Coordinates>(),
@@ -21,10 +24,7 @@ export class BoardInitializer {
 
 		pieceColors.forEach((color) => {
 			pieceTypes.forEach((type) => {
-				const startingLocations = this.getStartingPositions(
-					type,
-					this._playerColor === color ? "bottom" : "top"
-				);
+				const startingLocations = this.getStartingPositions(type, playerColor === color ? "bottom" : "top");
 				while (startingLocations.length) {
 					const lastItemIndex = startingLocations.length - 1;
 					const piece = this._pieceFactory.initPiece(type, color, `${type}${color}${lastItemIndex}`);
@@ -37,12 +37,12 @@ export class BoardInitializer {
 		return result;
 	}
 
-	getSquares(): Square[][] {
+	initSquareLayout(playerColor: PieceColor): Square[][] {
 		const squares = [];
 		for (let y = 0; y < 8; y++) {
 			squares.push([]);
 			for (let x = 0; x < 8; x++) {
-				const squareId = this._playerColor === "black" ? 8 * y + x : 64 - (8 * y + (8 - x));
+				const squareId = playerColor === "black" ? 8 * y + x : 64 - (8 * y + (8 - x));
 				const square = Square.create(`${squareId}`, { x, y });
 				(squares[y] as Square[]).push(square);
 			}

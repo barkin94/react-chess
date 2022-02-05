@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import { PieceColor } from "../../shared/types/piece-color.type";
 import { PieceType, pieceTypes } from "../../shared/types/piece-type.type";
 import { Bishop } from "./bishop.class";
@@ -8,6 +9,7 @@ import { Piece } from "./piece.abstract";
 import { Queen } from "./queen.class";
 import { Rook } from "./rook.class";
 
+@injectable()
 export class PieceFactory {
 	private readonly pieceCounts: { [key in PieceType]: number } = {
 		pawn: 8,

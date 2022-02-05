@@ -1,8 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { getBoardData } from "../../domain/domain";
-import { StartingData } from "../../domain/entities/board/board.class";
+import { PieceColor } from "../../domain/shared/types/piece-color.type";
+import { SquareColor } from "../../domain/shared/types/square-color.type";
+//import { getBoardData } from "../../domain/domain";
+import { initMatch } from "../thunks/init-match.thunk";
 import { moveOpponentsPieceToTargetSquare } from "../thunks/move-opponents-piece-to-target-square.thunk";
 import { moveSelectedPieceToTargetSquare } from "../thunks/move-selected-piece-to-target-square.thunk";
+import { toggleOnAvailableMoves } from "../thunks/toggle-on-available-moves.thunk";
 
 type BoardState = {
 	highlightedSquares: string[];
@@ -16,23 +19,31 @@ const initialState: BoardState = {
 	pieceLocations: {},
 };
 
+export type StartingData = {
+	squareData: { id: string; color: SquareColor }[][];
+	pieceLocations: PieceLocations;
+	playerColor: PieceColor;
+	isStartingFirst: boolean;
+};
+
+export type PieceLocations = { [squareId: string]: string };
+
+export type MoveResult = {
+	pieceLocations: PieceLocations;
+	killedPieceId?: string;
+	isCheckmated?: boolean;
+};
+
 const board = createSlice({
 	name: "board",
 	initialState,
 	reducers: {
-		setPieces: (state, action: PayloadAction<StartingData["pieceLocations"]>) => {
+		setPieces: (state, action: PayloadAction<PieceLocations>) => {
 			state.pieceLocations = action.payload;
 		},
 		toggleOffAvailableMoves: (state) => {
 			state.selectedPieceId = "";
 			state.highlightedSquares = [];
-		},
-		toggleOnAvailableMoves: (state, action: PayloadAction<string>) => {
-			const board = getBoardData();
-			const piece = board.getPieceById(action.payload);
-			const availableCoordinates = board.getAvailableMoves(piece);
-			state.highlightedSquares = availableCoordinates.map((c) => board.squares[c.y][c.x].id);
-			state.selectedPieceId = action.payload;
 		},
 	},
 	extraReducers: (builder) => {
@@ -47,10 +58,19 @@ const board = createSlice({
 		builder.addCase(moveOpponentsPieceToTargetSquare.fulfilled, (state, action) => {
 			state.pieceLocations = action.payload.pieceLocations;
 		});
+
+		builder.addCase(initMatch.fulfilled, (state, action) => {
+			state.pieceLocations = action.payload.pieceLocations;
+		});
+
+		builder.addCase(toggleOnAvailableMoves.fulfilled, (state, action) => {
+			state.highlightedSquares = action.payload.highlightedSquares;
+			state.selectedPieceId = action.payload.selectedPieceId;
+		});
 	},
 });
 
 // Action creators are generated for each case reducer function
-export const { toggleOnAvailableMoves, toggleOffAvailableMoves, setPieces } = board.actions;
+export const { toggleOffAvailableMoves, setPieces } = board.actions;
 
 export default board.reducer;

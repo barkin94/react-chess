@@ -4,9 +4,10 @@ import { Piece } from "../../piece/piece";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../redux/store";
 import { getPiecePropsViaId } from "../../piece/piece-helper";
-import { toggleOffAvailableMoves, toggleOnAvailableMoves } from "../../../../redux/reducers/board";
+import { toggleOffAvailableMoves } from "../../../../redux/reducers/board";
 import { moveSelectedPieceToTargetSquare } from "../../../../redux/thunks/move-selected-piece-to-target-square.thunk";
 import { SquareColor } from "../../../../domain/shared/types/square-color.type";
+import { toggleOnAvailableMoves } from "../../../../redux/thunks/toggle-on-available-moves.thunk";
 
 export interface SquareProps {
 	id: string;
@@ -25,13 +26,14 @@ export const Square: React.FC<SquareProps> = (props) => {
 
 	const onPieceClicked = () => {
 		if (!pieceProps || pieceProps.color !== playerColor) return;
-
-		dispatch(selectedPieceId ? toggleOffAvailableMoves() : toggleOnAvailableMoves(pieceProps.id));
+		const action = selectedPieceId ? toggleOffAvailableMoves() : toggleOnAvailableMoves({ pieceId: pieceProps.id });
+		dispatch(action as any);
 	};
 
 	const onSquareClicked = () => {
 		if (!props.isHighlighted) return;
-		dispatch(moveSelectedPieceToTargetSquare(props.id));
+		moveSelectedPieceToTargetSquare(props.id);
+		dispatch(moveSelectedPieceToTargetSquare(props.id) as any);
 	};
 
 	const getClassName = (): string => {

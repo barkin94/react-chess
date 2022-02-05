@@ -1,20 +1,35 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { MovePiece } from "../../domain/use-cases/move-piece";
 import { getSocket } from "../../socket/socket-io";
-import { RootState } from "../store";
-import { movePiece, MoveResult } from "../../domain/use-cases/move-piece";
+import { MoveResult, PieceLocations } from "../reducers/board";
+import { AppThunkExtraArgs, RootState } from "../store";
 
-export const moveSelectedPieceToTargetSquare = createAsyncThunk<MoveResult, string>(
-	"board",
-	(targetSquareId, { getState, rejectWithValue }) => {
+export const moveSelectedPieceToTargetSquare = createAsyncThunk<MoveResult, string, { extra: AppThunkExtraArgs }>(
+	"moveSelectedPiece",
+	(targetSquareId, { getState, extra }) => {
 		const state = getState() as RootState;
 
-		const result = movePiece(state.board.selectedPieceId, targetSquareId);
+		const moveResult = extra.container.get(MovePiece).execute({
+			pieceId: state.board.selectedPieceId,
+			targetSquareId,
+		});
+
+		const pieceLocations: PieceLocations = {};
+		moveResult.pieceLocations.forEach((piece, square) => (pieceLocations[square.id] = piece.id));
 
 		getSocket().emit("move", {
 			pieceId: state.board.selectedPieceId,
 			targetSquareId: targetSquareId,
 		});
 
-		return result;
+		if (moveResult.isCheckmated) {
+			getSocket().emit("checkmated");
+		}
+
+		return {
+			killedPieceId: moveResult.killedPiece?.id,
+			pieceLocations,
+			isCheckmated: moveResult.isCheckmated,
+		};
 	}
 );

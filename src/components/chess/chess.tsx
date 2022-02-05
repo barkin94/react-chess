@@ -1,9 +1,9 @@
 import "./chess.css";
-import { StartingData } from "../../domain/entities/board/board.class";
 import { Board } from "./board/board";
 import { PlayerPanel } from "./player-panel/player-panel";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { StartingData } from "../../redux/reducers/board";
 
 export const Chess: React.FC<{ matchStartingData: StartingData }> = (props) => {
 	const isWaitingTurn = useSelector((state: RootState) => state.game.waitingTurn);

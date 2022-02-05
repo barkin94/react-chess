@@ -1,19 +1,14 @@
 import { inject, injectable } from "inversify";
 import { Board, MoveResult } from "../entities/board/board.class";
+import { MovePieceInput } from "./move-piece";
 import { UseCase } from "./use-case.interface";
 
-export type MovePieceInput = { pieceId: string; targetSquareId: string };
-
 @injectable()
-export class MovePiece implements UseCase<MovePieceInput, MoveResult> {
+export class MoveOpponentPiece implements UseCase<MovePieceInput, MoveResult> {
 	@inject(Board)
 	private board!: Board;
 
 	execute(input: MovePieceInput): MoveResult {
-		if (!this.board.canPieceMakeMove(input.pieceId, input.targetSquareId)) {
-			throw new Error("cannot make that move");
-		}
-
 		return this.board.movePiece(input.pieceId, input.targetSquareId);
 	}
 }

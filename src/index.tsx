@@ -1,3 +1,4 @@
+import "./inversify.config";
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
@@ -24,4 +25,3 @@ reportWebVitals();
 
 const socket = initSocket();
 initServerEvents(socket, store);
-//initSocketIoConnection();

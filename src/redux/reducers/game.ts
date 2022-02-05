@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { StartingData } from "../../domain/entities/board/board.class";
+import { initMatch } from "../thunks/init-match.thunk";
 import { moveOpponentsPieceToTargetSquare } from "../thunks/move-opponents-piece-to-target-square.thunk";
 import { moveSelectedPieceToTargetSquare } from "../thunks/move-selected-piece-to-target-square.thunk";
+import { StartingData } from "./board";
 
 type GameState = {
 	isConnected: boolean;
@@ -10,6 +11,11 @@ type GameState = {
 	waitingTurn: boolean;
 	yourDeadPieces: string[];
 	opponentsDeadPieces: string[];
+	matchResult?: MatchResult;
+};
+
+type MatchResult = {
+	result: "won" | "loss";
 };
 
 const initialState: GameState = {
@@ -35,6 +41,12 @@ const gameSlice = createSlice({
 		forfeitWinMatch: (state) => {
 			state.forfeitWin = true;
 		},
+		matchWon: (state) => {
+			state.matchResult = {
+				result: "won",
+			};
+		},
+		rematch: (state) => {},
 		waitingForTurn: (state, action: PayloadAction<boolean>) => {
 			state.waitingTurn = action.payload;
 		},
@@ -42,21 +54,33 @@ const gameSlice = createSlice({
 	extraReducers: (builder) => {
 		builder.addCase(moveSelectedPieceToTargetSquare.fulfilled, (state, action) => {
 			state.waitingTurn = true;
-			if (action.payload.killedPiece) {
-				state.opponentsDeadPieces.push(action.payload.killedPiece.id);
+			if (action.payload.killedPieceId) {
+				state.opponentsDeadPieces.push(action.payload.killedPieceId);
 			}
 		});
 
 		builder.addCase(moveOpponentsPieceToTargetSquare.fulfilled, (state, action) => {
 			state.waitingTurn = false;
-			if (action.payload.killedPiece) {
-				state.yourDeadPieces.push(action.payload.killedPiece.id);
+			if (action.payload.killedPieceId) {
+				state.yourDeadPieces.push(action.payload.killedPieceId);
+			}
+			if (action.payload.isCheckmated) {
+				state.matchResult = { result: "loss" };
 			}
 		});
+
+		builder.addCase(initMatch.fulfilled, (state, action) => {
+			state.matchStartingData = action.payload;
+			state.waitingTurn = !action.payload.isStartingFirst;
+		});
+
+		// builder.addCase(moveOpponentsPieceToTargetSquare.fulfilled, (state, action) => {
+
+		// });
 	},
 });
 
 // Action creators are generated for each case reducer function
-export const { readyMatch, forfeitWinMatch, setAsConnected, waitingForTurn } = gameSlice.actions;
+export const { readyMatch, forfeitWinMatch, setAsConnected, waitingForTurn, matchWon } = gameSlice.actions;
 
 export default gameSlice.reducer;
