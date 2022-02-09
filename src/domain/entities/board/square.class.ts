@@ -1,9 +1,7 @@
 import { Coordinates } from "../../shared/types/coordinates.type";
 import { SquareColor } from "../../shared/types/square-color.type";
-import { Piece } from "../piece/piece.abstract";
 
 export class Square {
-	private _piece?: Piece;
 	private _color: SquareColor;
 
 	private constructor(private _id: string, private _coordinates: Coordinates) {
@@ -16,10 +14,6 @@ export class Square {
 
 	get color() {
 		return this._color;
-	}
-
-	get piece() {
-		return this._piece;
 	}
 
 	get coordinates() {

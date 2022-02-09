@@ -10,10 +10,6 @@ export class MovePiece implements UseCase<MovePieceInput, MoveResult> {
 	private board!: Board;
 
 	execute(input: MovePieceInput): MoveResult {
-		if (!this.board.canPieceMakeMove(input.pieceId, input.targetSquareId)) {
-			throw new Error("cannot make that move");
-		}
-
 		return this.board.movePiece(input.pieceId, input.targetSquareId);
 	}
 }

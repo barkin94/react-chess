@@ -22,14 +22,10 @@ export const moveSelectedPieceToTargetSquare = createAsyncThunk<MoveResult, stri
 			targetSquareId: targetSquareId,
 		});
 
-		if (moveResult.isCheckmated) {
-			getSocket().emit("checkmated");
-		}
-
 		return {
 			killedPieceId: moveResult.killedPiece?.id,
 			pieceLocations,
-			isCheckmated: moveResult.isCheckmated,
+			matchResult: moveResult.matchResult,
 		};
 	}
 );

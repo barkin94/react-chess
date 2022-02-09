@@ -14,9 +14,6 @@ export class GetAvailableMoves implements UseCase<{ pieceId: string }, Square[]>
 
 	execute(input: { pieceId: string }) {
 		const piece = this._dataStore.getPieceById(input.pieceId);
-		const squareLayout = this._dataStore.getSquareLayout();
-		const availableCoordinates = this._board.getAvailableMoves(piece);
-
-		return availableCoordinates.map((c) => squareLayout[c.y][c.x]);
+		return this._board.getPossibleMoves(piece);
 	}
 }

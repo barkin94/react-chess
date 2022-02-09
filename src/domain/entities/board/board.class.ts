@@ -2,49 +2,40 @@ import { Piece } from "../piece/piece.abstract";
 import { inject, injectable } from "inversify";
 import { DataStore } from "../../data-store";
 import { Square } from "./square.class";
+import { MoveCalculationStrategyResolver } from "./move-calculation-strategy-resolver";
+import { PieceColor } from "../../shared/types/piece-color.type";
 
 @injectable()
 export class Board {
 	@inject(DataStore)
 	private _dataStore!: DataStore;
 
+	@inject(MoveCalculationStrategyResolver)
+	private _moveCalculationStrategyResolver!: MoveCalculationStrategyResolver;
+
 	getPieceLocations(): PieceLocations {
-		const map = new Map<Square, Piece>();
-		this._dataStore
-			.getPieces()
-			.forEach((piece) => map.set(this._dataStore.getSquareById(piece.squareId as string), piece));
-		return map;
+		return this._dataStore.getPieceLocations();
 	}
 
-	getAvailableMoves(piece: Piece) {
+	getPossibleMoves(piece: Piece) {
 		if (!piece.squareId) throw new Error("piece is not on the board");
 
 		const currentLocation = this._dataStore.getSquareById(piece.squareId);
 
 		if (!currentLocation) throw new Error("square matching with square id not found");
-		return piece.getAvailableMoves(currentLocation.coordinates, this._dataStore.getSquareLayout());
-	}
 
-	canPieceMakeMove(pieceId: string, targetSquareId: string) {
-		const piece = this._dataStore.getPieceById(pieceId);
-		if (!piece.squareId) throw new Error("piece is not on the board");
-		const currentSquare = this._dataStore.getSquareById(piece.squareId);
-
-		const targetSquare = this._dataStore.getSquareById(targetSquareId);
-		const availableMoves = piece.getAvailableMoves(currentSquare.coordinates, this._dataStore.getSquareLayout());
-		const canMoveToLocation = availableMoves.find(
-			(move: any) => move.x === targetSquare.coordinates.x && move.y === targetSquare.coordinates.y
-		);
-
-		return canMoveToLocation;
+		return this._moveCalculationStrategyResolver.resolve(piece.type).getPossibleMoves(piece);
 	}
 
 	movePiece(pieceId: string, targetSquareId: string): MoveResult {
+		if (!this.canPieceMakeMove(pieceId, targetSquareId)) {
+			throw new Error("piece cannot make that move");
+		}
+
 		const piece = this._dataStore.getPieceById(pieceId);
 		if (!piece.squareId) throw new Error("piece is not on the board");
 
 		const currentSquare = this._dataStore.getSquareById(piece.squareId);
-
 		this._dataStore.emptySquare(currentSquare);
 
 		piece.squareId = targetSquareId;
@@ -55,33 +46,105 @@ export class Board {
 
 		this._dataStore.insertPieceOnSquare(piece, targetSquare);
 
-		return {
+		const moveResult: MoveResult = {
 			killedPiece: opponentPieceOnTargetSquare,
 			pieceLocations: this.getPieceLocations(),
-			isCheckmated: this.isCheckmated(),
 		};
+
+		const isPlayerCheckMated = this.isCheckmated(this._dataStore.getPlayerColor());
+		const opponentColor: PieceColor = this._dataStore.getPlayerColor() === "black" ? "white" : "black";
+		const isOpponentCheckMated = this.isOpponentKingInAttackRangeOfPiece(piece) && this.isCheckmated(opponentColor);
+
+		if (isPlayerCheckMated && isOpponentCheckMated) {
+			moveResult.matchResult = "stalemate";
+		} else if (isPlayerCheckMated) {
+			moveResult.matchResult = "loss";
+		} else if (isOpponentCheckMated) {
+			moveResult.matchResult = "win";
+		}
+
+		return moveResult;
 	}
 
-	private isCheckmated(): boolean {
-		const playerColor = this._dataStore.getPlayerColor();
-		const playerKingPiece = this._dataStore
-			.getPieces()
-			.find((piece) => piece.color === playerColor && piece.type === "king");
+	private canPieceMakeMove(pieceId: string, targetSquareId: string) {
+		const piece = this._dataStore.getPieceById(pieceId);
+		if (!piece.squareId) throw new Error("piece is not on the board");
 
-		if (!playerKingPiece) {
+		const targetSquare = this._dataStore.getSquareById(targetSquareId);
+		const moveCalculationStrategy = this._moveCalculationStrategyResolver.resolve(piece.type);
+		const canMoveToLocation = moveCalculationStrategy
+			.getPossibleMoves(piece)
+			.find((possibleMoveSquare) => possibleMoveSquare.id === targetSquare.id);
+
+		return canMoveToLocation;
+	}
+
+	private isCheckmated(side: PieceColor) {
+		const possibleMovesOfKing = this.getPossibleMovesOfKing(side);
+		const otherSideColor: PieceColor = side === "black" ? "white" : "black";
+
+		const unavailableMovesOfKing: Square[] = [];
+
+		for (let pieceOfOtherSide of this.getPiecesCurrentlyOnBoard(otherSideColor)) {
+			const unavailableKingMove = this.getPossibleMoves(pieceOfOtherSide).find((s) =>
+				possibleMovesOfKing.find((m) => s.id === m.id)
+			);
+
+			if (unavailableKingMove) {
+				unavailableMovesOfKing.push(unavailableKingMove);
+			}
+
+			if (possibleMovesOfKing.length === unavailableMovesOfKing.length) return true;
+		}
+
+		return false;
+	}
+
+	private isOpponentKingInAttackRangeOfPiece(piece: Piece) {
+		const opponentColor = this._dataStore.getPlayerColor() === "white" ? "black" : "white";
+		const opponentKing = this.getPiecesCurrentlyOnBoard(opponentColor).find((p) => p.type === "king");
+
+		if (!opponentKing) {
 			throw new Error("king not found");
 		}
 
-		if (!playerKingPiece.squareId) {
+		if (!opponentKing.squareId) {
 			throw new Error("king is not on board");
 		}
 
-		const kingCoordinates = this._dataStore.getSquareById(playerKingPiece.squareId).coordinates;
-		const availableMoves = playerKingPiece.getAvailableMoves(kingCoordinates, this._dataStore.getSquareLayout());
+		return !!this.getPossibleMoves(piece).find((square) => square.id === opponentKing.squareId);
+	}
 
-		return !availableMoves.length;
+	private getPossibleMovesOfKing(color: PieceColor) {
+		const opponentKing = this._dataStore
+			.getPieces()
+			.find((piece) => piece.color === color && piece.type === "king");
+
+		if (!opponentKing) {
+			throw new Error("king not found");
+		}
+
+		if (!opponentKing.squareId) {
+			throw new Error("king is not on board");
+		}
+
+		return this._moveCalculationStrategyResolver.resolve(opponentKing.type).getPossibleMoves(opponentKing);
+	}
+
+	private getPiecesCurrentlyOnBoard(color?: PieceColor) {
+		let piecesOnBoard = Array.from(this._dataStore.getPieceLocations().values());
+
+		if (color) {
+			piecesOnBoard = piecesOnBoard.filter((piece) => piece.color === color);
+		}
+
+		return piecesOnBoard;
 	}
 }
 
 export type PieceLocations = Map<Square, Piece>;
-export type MoveResult = { killedPiece: Piece | undefined; pieceLocations: PieceLocations; isCheckmated: boolean };
+export type MoveResult = {
+	killedPiece: Piece | undefined;
+	pieceLocations: PieceLocations;
+	matchResult?: "win" | "loss" | "stalemate";
+};

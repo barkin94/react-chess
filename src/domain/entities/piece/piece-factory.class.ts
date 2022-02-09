@@ -11,28 +11,6 @@ import { Rook } from "./rook.class";
 
 @injectable()
 export class PieceFactory {
-	private readonly pieceCounts: { [key in PieceType]: number } = {
-		pawn: 8,
-		bishop: 2,
-		king: 1,
-		queen: 1,
-		knight: 2,
-		rook: 2,
-	};
-
-	getPieces(color: PieceColor): Piece[] {
-		const pieces: Piece[] = [];
-
-		for (let name of pieceTypes) {
-			for (let i = 0; i < this.pieceCounts[name]; i++) {
-				const piece = this.initPiece(name, color, name + color + i);
-				pieces.push(piece);
-			}
-		}
-
-		return pieces;
-	}
-
 	initPiece(pieceType: PieceType, color: PieceColor, id: string) {
 		switch (pieceType) {
 			case "pawn":

@@ -32,7 +32,7 @@ export const Square: React.FC<SquareProps> = (props) => {
 
 	const onSquareClicked = () => {
 		if (!props.isHighlighted) return;
-		moveSelectedPieceToTargetSquare(props.id);
+		//moveSelectedPieceToTargetSquare(props.id);
 		dispatch(moveSelectedPieceToTargetSquare(props.id) as any);
 	};
 

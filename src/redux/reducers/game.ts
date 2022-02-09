@@ -11,11 +11,7 @@ type GameState = {
 	waitingTurn: boolean;
 	yourDeadPieces: string[];
 	opponentsDeadPieces: string[];
-	matchResult?: MatchResult;
-};
-
-type MatchResult = {
-	result: "won" | "loss";
+	matchResult?: "win" | "loss" | "stalemate" | "opponent-forfeit";
 };
 
 const initialState: GameState = {
@@ -39,14 +35,8 @@ const gameSlice = createSlice({
 			state.waitingTurn = !action.payload.isStartingFirst;
 		},
 		forfeitWinMatch: (state) => {
-			state.forfeitWin = true;
+			state.matchResult = "opponent-forfeit";
 		},
-		matchWon: (state) => {
-			state.matchResult = {
-				result: "won",
-			};
-		},
-		rematch: (state) => {},
 		waitingForTurn: (state, action: PayloadAction<boolean>) => {
 			state.waitingTurn = action.payload;
 		},
@@ -54,6 +44,7 @@ const gameSlice = createSlice({
 	extraReducers: (builder) => {
 		builder.addCase(moveSelectedPieceToTargetSquare.fulfilled, (state, action) => {
 			state.waitingTurn = true;
+			state.matchResult = action.payload.matchResult;
 			if (action.payload.killedPieceId) {
 				state.opponentsDeadPieces.push(action.payload.killedPieceId);
 			}
@@ -61,11 +52,9 @@ const gameSlice = createSlice({
 
 		builder.addCase(moveOpponentsPieceToTargetSquare.fulfilled, (state, action) => {
 			state.waitingTurn = false;
+			state.matchResult = action.payload.matchResult;
 			if (action.payload.killedPieceId) {
 				state.yourDeadPieces.push(action.payload.killedPieceId);
-			}
-			if (action.payload.isCheckmated) {
-				state.matchResult = { result: "loss" };
 			}
 		});
 
@@ -73,14 +62,10 @@ const gameSlice = createSlice({
 			state.matchStartingData = action.payload;
 			state.waitingTurn = !action.payload.isStartingFirst;
 		});
-
-		// builder.addCase(moveOpponentsPieceToTargetSquare.fulfilled, (state, action) => {
-
-		// });
 	},
 });
 
 // Action creators are generated for each case reducer function
-export const { readyMatch, forfeitWinMatch, setAsConnected, waitingForTurn, matchWon } = gameSlice.actions;
+export const { readyMatch, forfeitWinMatch, setAsConnected, waitingForTurn } = gameSlice.actions;
 
 export default gameSlice.reducer;

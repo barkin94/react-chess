@@ -1,6 +1,6 @@
 import { EnhancedStore } from "@reduxjs/toolkit";
 import { Socket } from "socket.io-client";
-import { forfeitWinMatch, matchWon, readyMatch, setAsConnected, waitingForTurn } from "../redux/reducers/game";
+import { forfeitWinMatch, setAsConnected } from "../redux/reducers/game";
 import { initMatch } from "../redux/thunks/init-match.thunk";
 import { moveOpponentsPieceToTargetSquare } from "../redux/thunks/move-opponents-piece-to-target-square.thunk";
 
@@ -22,8 +22,5 @@ export const initServerEvents = (socket: Socket, store: EnhancedStore) => {
 		}) as any;
 
 		store.dispatch(thunkAction);
-	});
-	socket.on("checkmated", (args) => {
-		store.dispatch(matchWon());
 	});
 };

@@ -31,7 +31,7 @@ export type PieceLocations = { [squareId: string]: string };
 export type MoveResult = {
 	pieceLocations: PieceLocations;
 	killedPieceId?: string;
-	isCheckmated?: boolean;
+	matchResult?: "win" | "loss" | "stalemate";
 };
 
 const board = createSlice({
