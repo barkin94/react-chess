@@ -5,7 +5,7 @@ import { Square } from "../entities/board/square.class";
 import { UseCase } from "./use-case.interface";
 
 @injectable()
-export class GetAvailableMoves implements UseCase<{ pieceId: string }, Square[]> {
+export class GetPossibleMoves implements UseCase<{ pieceId: string }, Square[]> {
 	@inject(DataStore)
 	private _dataStore!: DataStore;
 

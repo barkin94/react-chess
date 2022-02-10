@@ -1,10 +1,9 @@
-import { PieceFactory } from "../piece/piece-factory.class";
-import { Piece } from "../piece/piece.abstract";
+import { Piece } from "../piece/piece.class";
 import { Coordinates } from "../../shared/types/coordinates.type";
 import { PieceColor, pieceColors } from "../../shared/types/piece-color.type";
 import { PieceType, pieceTypes } from "../../shared/types/piece-type.type";
 import { Square } from "./square.class";
-import { inject, injectable } from "inversify";
+import { injectable } from "inversify";
 
 type Alignment = "top" | "bottom";
 export type PieceStartingLocations = {
@@ -13,9 +12,6 @@ export type PieceStartingLocations = {
 
 @injectable()
 export class BoardInitializer {
-	@inject(PieceFactory)
-	private _pieceFactory!: PieceFactory;
-
 	getPieceStartingLocations(playerColor: PieceColor): PieceStartingLocations {
 		const result: PieceStartingLocations = {
 			white: new Map<Piece, Coordinates>(),
@@ -27,7 +23,7 @@ export class BoardInitializer {
 				const startingLocations = this.getStartingPositions(type, playerColor === color ? "bottom" : "top");
 				while (startingLocations.length) {
 					const lastItemIndex = startingLocations.length - 1;
-					const piece = this._pieceFactory.initPiece(type, color, `${type}${color}${lastItemIndex}`);
+					const piece = Piece.create(type, color, `${type}${color}${lastItemIndex}`);
 					result[color].set(piece, startingLocations[lastItemIndex]);
 					startingLocations.pop();
 				}

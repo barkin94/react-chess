@@ -1,10 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import board from "./reducers/board";
 import game from "./reducers/game";
-import container from "../inversify.config";
-import { Container } from "inversify";
 import { getSocket } from "../socket/socket-io";
 import { Socket } from "socket.io-client";
+import { useCases } from "../domain/domain";
+
+const extraArgument: AppThunkExtraArgs = {
+	...useCases,
+	getSocket,
+};
 
 export const store = configureStore({
 	reducer: {
@@ -14,7 +18,7 @@ export const store = configureStore({
 	middleware: (defaultMiddlewares) =>
 		defaultMiddlewares({
 			thunk: {
-				extraArgument: { container },
+				extraArgument,
 			},
 		}),
 });
@@ -24,4 +28,4 @@ export type RootState = ReturnType<typeof store.getState>;
 
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;
-export type AppThunkExtraArgs = { container: Container; socket: Socket };
+export type AppThunkExtraArgs = typeof useCases & { getSocket: () => Socket };

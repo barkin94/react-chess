@@ -1,6 +1,4 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { MovePiece } from "../../domain/use-cases/move-piece";
-import { getSocket } from "../../socket/socket-io";
 import { MoveResult, PieceLocations } from "../reducers/board";
 import { AppThunkExtraArgs, RootState } from "../store";
 
@@ -9,7 +7,7 @@ export const moveSelectedPieceToTargetSquare = createAsyncThunk<MoveResult, stri
 	(targetSquareId, { getState, extra }) => {
 		const state = getState() as RootState;
 
-		const moveResult = extra.container.get(MovePiece).execute({
+		const moveResult = extra.movePiece.execute({
 			pieceId: state.board.selectedPieceId,
 			targetSquareId,
 		});
@@ -17,7 +15,7 @@ export const moveSelectedPieceToTargetSquare = createAsyncThunk<MoveResult, stri
 		const pieceLocations: PieceLocations = {};
 		moveResult.pieceLocations.forEach((piece, square) => (pieceLocations[square.id] = piece.id));
 
-		getSocket().emit("move", {
+		extra.getSocket().emit("move", {
 			pieceId: state.board.selectedPieceId,
 			targetSquareId: targetSquareId,
 		});

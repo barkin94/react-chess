@@ -1,8 +1,8 @@
-import { Piece } from "../piece/piece.abstract";
+import { Piece } from "../piece/piece.class";
 import { inject, injectable } from "inversify";
 import { DataStore } from "../../data-store";
 import { Square } from "./square.class";
-import { MoveCalculationStrategyResolver } from "./move-calculation-strategy-resolver";
+import { MoveCalculationStrategyResolver } from "../piece/move-calculation/move-calculation-strategy-resolver";
 import { PieceColor } from "../../shared/types/piece-color.type";
 
 @injectable()
