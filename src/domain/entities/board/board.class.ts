@@ -53,7 +53,7 @@ export class Board {
 
 		const isPlayerCheckMated = this.isCheckmated(this._dataStore.getPlayerColor());
 		const opponentColor: PieceColor = this._dataStore.getPlayerColor() === "black" ? "white" : "black";
-		const isOpponentCheckMated = this.isOpponentKingInAttackRangeOfPiece(piece) && this.isCheckmated(opponentColor);
+		const isOpponentCheckMated = this.isCheckmated(opponentColor);
 
 		if (isPlayerCheckMated && isOpponentCheckMated) {
 			moveResult.matchResult = "stalemate";
@@ -79,56 +79,39 @@ export class Board {
 		return canMoveToLocation;
 	}
 
-	private isCheckmated(side: PieceColor) {
-		const possibleMovesOfKing = this.getPossibleMovesOfKing(side);
-		const otherSideColor: PieceColor = side === "black" ? "white" : "black";
+	private isCheckmated(sideColor: PieceColor) {
+		const checkmateSquares = this.getCheckmateSquaresOfSide(sideColor);
+		const checkmateSquaresTargetedByOpponent: Square[] = [];
 
-		const unavailableMovesOfKing: Square[] = [];
-
+		const otherSideColor: PieceColor = sideColor === "black" ? "white" : "black";
 		for (let pieceOfOtherSide of this.getPiecesCurrentlyOnBoard(otherSideColor)) {
-			const unavailableKingMove = this.getPossibleMoves(pieceOfOtherSide).find((s) =>
-				possibleMovesOfKing.find((m) => s.id === m.id)
+			const targetedCheckmateSquares = this.getPossibleMoves(pieceOfOtherSide).filter((square) =>
+				checkmateSquares.some((c) => square.id === c.id)
 			);
 
-			if (unavailableKingMove) {
-				unavailableMovesOfKing.push(unavailableKingMove);
-			}
+			checkmateSquaresTargetedByOpponent.push(...targetedCheckmateSquares);
 
-			if (possibleMovesOfKing.length === unavailableMovesOfKing.length) return true;
+			if (checkmateSquares.length <= checkmateSquaresTargetedByOpponent.length) return true;
 		}
 
 		return false;
 	}
 
-	private isOpponentKingInAttackRangeOfPiece(piece: Piece) {
-		const opponentColor = this._dataStore.getPlayerColor() === "white" ? "black" : "white";
-		const opponentKing = this.getPiecesCurrentlyOnBoard(opponentColor).find((p) => p.type === "king");
+	private getCheckmateSquaresOfSide(color: PieceColor) {
+		const king = this.getPiecesCurrentlyOnBoard(color).find((piece) => piece.type === "king");
 
-		if (!opponentKing) {
+		if (!king) {
 			throw new Error("king not found");
 		}
 
-		if (!opponentKing.squareId) {
+		if (!king.squareId) {
 			throw new Error("king is not on board");
 		}
 
-		return !!this.getPossibleMoves(piece).find((square) => square.id === opponentKing.squareId);
-	}
+		const currentLocationOfKing = this._dataStore.getSquareById(king.squareId);
+		const possibleMovesOfKing = this._moveCalculationStrategyResolver.resolve(king.type).getPossibleMoves(king);
 
-	private getPossibleMovesOfKing(color: PieceColor) {
-		const opponentKing = this._dataStore
-			.getPieces()
-			.find((piece) => piece.color === color && piece.type === "king");
-
-		if (!opponentKing) {
-			throw new Error("king not found");
-		}
-
-		if (!opponentKing.squareId) {
-			throw new Error("king is not on board");
-		}
-
-		return this._moveCalculationStrategyResolver.resolve(opponentKing.type).getPossibleMoves(opponentKing);
+		return [currentLocationOfKing, ...possibleMovesOfKing];
 	}
 
 	private getPiecesCurrentlyOnBoard(color?: PieceColor) {
