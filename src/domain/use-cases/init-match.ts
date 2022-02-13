@@ -20,6 +20,7 @@ export class InitMatch implements UseCase<PieceColor, MatchInitialData> {
 		const squareLayout = this._boardInitializer.initSquareLayout(playerColor);
 		this._dataStore.setSquareLayout(squareLayout);
 
+		this._dataStore.clearPieceLocations();
 		const pieceLocations = this._boardInitializer.getPieceStartingLocations(playerColor);
 		pieceLocations.black.forEach((coordinates, piece) => {
 			const square = this._dataStore.getSquareByCoordinates(coordinates);

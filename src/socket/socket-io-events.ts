@@ -1,20 +1,17 @@
 import { EnhancedStore } from "@reduxjs/toolkit";
 import { Socket } from "socket.io-client";
-import { forfeitWinMatch, setAsConnected } from "../redux/reducers/game";
-import { initMatch } from "../redux/thunks/init-match.thunk";
+import { forfeitWinMatch, searchMatch } from "../redux/reducers/game";
 import { moveOpponentsPieceToTargetSquare } from "../redux/thunks/move-opponents-piece-to-target-square.thunk";
 
-export const initServerEvents = (socket: Socket, store: EnhancedStore) => {
+export const initServerEventHandlers = (socket: Socket, store: EnhancedStore) => {
 	socket.on("connect", () => {
-		store.dispatch(setAsConnected());
+		store.dispatch(searchMatch());
 	});
-	socket.on("matchFound", (args) => {
-		const thunkAction = initMatch({ isStartingFirst: args.isStartingFirst, playerColor: args.color }) as any;
-		store.dispatch(thunkAction);
-	});
+
 	socket.on("forfeit-win", (args) => {
 		store.dispatch(forfeitWinMatch());
 	});
+
 	socket.on("move", (args) => {
 		const thunkAction = moveOpponentsPieceToTargetSquare({
 			pieceId: args.pieceId,

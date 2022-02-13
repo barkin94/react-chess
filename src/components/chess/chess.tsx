@@ -3,22 +3,28 @@ import { Board } from "./board/board";
 import { PlayerPanel } from "./player-panel/player-panel";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { StartingData } from "../../redux/reducers/board";
+import ReactModal from "react-modal";
+import { MatchResultMenu } from "./board/match-result-menu/match-result-menu";
 
-export const Chess: React.FC<{ matchStartingData: StartingData }> = (props) => {
+export const Chess: React.FC = () => {
 	const isWaitingTurn = useSelector((state: RootState) => state.game.waitingTurn);
 	const opponentsKilledPieces = useSelector((state: RootState) => state.game.opponentsDeadPieces);
 	const yourKilledPieces = useSelector((state: RootState) => state.game.yourDeadPieces);
+	const matchResult = useSelector((state: RootState) => state.game.matchResult);
 
 	return (
 		<div className="chess">
 			<PlayerPanel name="You" isWaitingTurn={isWaitingTurn} killedPieceIds={yourKilledPieces}></PlayerPanel>
-			<Board squareData={props.matchStartingData.squareData}></Board>
+			<Board></Board>
 			<PlayerPanel
 				name="Opponent"
 				isWaitingTurn={!isWaitingTurn}
 				killedPieceIds={opponentsKilledPieces}
 			></PlayerPanel>
+
+			<ReactModal isOpen={!!matchResult}>
+				<MatchResultMenu matchResult={matchResult!}></MatchResultMenu>
+			</ReactModal>
 		</div>
 	);
 };

@@ -5,14 +5,18 @@ import { SearchingMatch } from "../searching-match/searching-match";
 import { Chess } from "../chess/chess";
 
 export const App: React.FC = () => {
-	const isConnected = useSelector((state: RootState) => state.game.isConnected);
-	const matchStartingData = useSelector((state: RootState) => state.game.matchStartingData);
-
+	const activePage = useSelector((state: RootState) => state.game.activePage);
 	const getView = () => {
-		if (!isConnected) return null;
-
-		if (!matchStartingData) return <SearchingMatch></SearchingMatch>;
-		else return <Chess matchStartingData={matchStartingData}></Chess>;
+		switch (activePage.page) {
+			case "connecting":
+				return null;
+			case "searching-match":
+				return <SearchingMatch></SearchingMatch>;
+			case "in-match":
+				return <Chess></Chess>;
+			default:
+				return null;
+		}
 	};
 
 	return getView();

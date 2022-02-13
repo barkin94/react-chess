@@ -11,3 +11,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.ReactModal__Content {
+	inset: unset !important;
+	top: 50% !important;
+	left: 50% !important;
+	transform: translate(-50%, -50%);
+}

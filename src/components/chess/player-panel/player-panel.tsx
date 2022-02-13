@@ -1,5 +1,5 @@
 import { Piece } from "../piece/piece";
-import { getPiecePropsViaId } from "../piece/piece-helper";
+import { extractPiecePropsFromId } from "../piece/piece-helper";
 
 interface Props {
 	name: string;
@@ -13,7 +13,7 @@ export const PlayerPanel: React.FC<Props> = (props) => {
 			<div>{props.name}</div>
 			{!props.isWaitingTurn && <div>Sıra bunda</div>}
 			{props.killedPieceIds.map((id) => {
-				const props = getPiecePropsViaId(id);
+				const props = extractPiecePropsFromId(id);
 				return <Piece id={props.id} type={props.type} color={props.color}></Piece>;
 			})}
 		</div>

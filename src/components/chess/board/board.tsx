@@ -3,10 +3,16 @@ import { Square } from "./square/square";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import React from "react";
-import { StartingData } from "../../../redux/reducers/board";
 
-export const Board: React.FC<{ squareData: StartingData["squareData"] }> = (props) => {
+export const Board: React.FC = () => {
 	const highlightedSquares = useSelector((state: RootState) => state.board.highlightedSquares);
+	const squareData = useSelector((state: RootState) => {
+		if (state.game.activePage.page !== "in-match") {
+			throw new Error('active page needs to be "in match"');
+		}
+
+		return state.game.activePage.matchStartingData.squareData;
+	});
 
 	const isSquareHighlighted = (squareId: string): boolean => {
 		return !!highlightedSquares.find((id) => id === squareId);
@@ -14,7 +20,7 @@ export const Board: React.FC<{ squareData: StartingData["squareData"] }> = (prop
 
 	return (
 		<div className="board">
-			{props.squareData.map((row, rowIndex) => (
+			{squareData.map((row, rowIndex) => (
 				<div className="row" key={rowIndex}>
 					{row.map((prop) => (
 						<Square
