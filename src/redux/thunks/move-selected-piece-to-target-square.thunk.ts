@@ -8,7 +8,7 @@ export const moveSelectedPieceToTargetSquare = createAsyncThunk<MoveResult, stri
 		const state = getState() as RootState;
 
 		const moveResult = extra.movePiece.execute({
-			pieceId: state.board.selectedPieceId,
+			pieceId: state.board.selectedPieceId!,
 			targetSquareId,
 		});
 

@@ -7,7 +7,7 @@ import App from "./components/app/app";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import { initSocket } from "./socket/socket-io";
-import { initServerEvents } from "./socket/socket-io-events";
+import { initServerEventHandlers } from "./socket/socket-io-events";
 
 ReactDOM.render(
 	<React.StrictMode>
@@ -24,4 +24,4 @@ ReactDOM.render(
 reportWebVitals();
 
 const socket = initSocket();
-initServerEvents(socket, store);
+initServerEventHandlers(socket, store);

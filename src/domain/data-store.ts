@@ -12,6 +12,11 @@ export class DataStore {
 	private _pieceLocations = new Map<Square, Piece>();
 	private _playerColor!: PieceColor;
 
+	clearPieceLocations() {
+		this._pieceLocations.clear();
+		this._pieceIdToEntityMap.forEach((piece) => delete piece.squareId);
+	}
+
 	getPlayerColor() {
 		if (!this._playerColor) throw new Error("player color not found");
 		return this._playerColor;

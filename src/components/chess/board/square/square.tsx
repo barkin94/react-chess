@@ -3,7 +3,7 @@ import "./square.css";
 import { Piece } from "../../piece/piece";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../redux/store";
-import { getPiecePropsViaId } from "../../piece/piece-helper";
+import { extractPiecePropsFromId } from "../../piece/piece-helper";
 import { toggleOffAvailableMoves } from "../../../../redux/reducers/board";
 import { moveSelectedPieceToTargetSquare } from "../../../../redux/thunks/move-selected-piece-to-target-square.thunk";
 import { SquareColor } from "../../../../domain/shared/types/square-color.type";
@@ -18,22 +18,32 @@ export interface SquareProps {
 export const Square: React.FC<SquareProps> = (props) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const pieceId = useSelector((state: RootState) => state.board.pieceLocations[props.id]);
-	const playerColor = useSelector((state: RootState) => state.game.matchStartingData?.playerColor);
-
 	const selectedPieceId = useSelector((state: RootState) => state.board.selectedPieceId);
-	const pieceProps = pieceId ? getPiecePropsViaId(pieceId) : null;
+	const pieceId = useSelector((state: RootState) => state.board.pieceLocations[props.id]);
+	const playerColor = useSelector((state: RootState) => {
+		if (state.game.activePage.page !== "in-match") {
+			throw new Error('active page needs to be "in-match"');
+		}
+
+		return state.game.activePage.matchStartingData.playerColor;
+	});
+
+	const pieceProps = pieceId ? extractPiecePropsFromId(pieceId) : null;
 
 	const onPieceClicked = () => {
 		if (!pieceProps || pieceProps.color !== playerColor) return;
-		const action = selectedPieceId ? toggleOffAvailableMoves() : toggleOnAvailableMoves({ pieceId: pieceProps.id });
-		dispatch(action as any);
+
+		const toggleAction = selectedPieceId
+			? toggleOffAvailableMoves()
+			: toggleOnAvailableMoves({ pieceId: pieceProps.id });
+
+		dispatch(toggleAction);
 	};
 
 	const onSquareClicked = () => {
 		if (!props.isHighlighted) return;
-		//moveSelectedPieceToTargetSquare(props.id);
-		dispatch(moveSelectedPieceToTargetSquare(props.id) as any);
+
+		dispatch(moveSelectedPieceToTargetSquare(props.id));
 	};
 
 	const getClassName = (): string => {

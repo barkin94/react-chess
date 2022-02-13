@@ -4,35 +4,20 @@ import { moveOpponentsPieceToTargetSquare } from "../thunks/move-opponents-piece
 import { moveSelectedPieceToTargetSquare } from "../thunks/move-selected-piece-to-target-square.thunk";
 import { StartingData } from "./board";
 
-type GameState = {
-	isConnected: boolean;
-	forfeitWin: boolean;
-	matchStartingData: StartingData | null;
-	waitingTurn: boolean;
-	yourDeadPieces: string[];
-	opponentsDeadPieces: string[];
-	matchResult?: "win" | "loss" | "stalemate" | "opponent-forfeit";
-};
-
 const initialState: GameState = {
-	forfeitWin: false,
-	isConnected: false,
-	matchStartingData: null,
 	waitingTurn: false,
 	yourDeadPieces: [],
 	opponentsDeadPieces: [],
+	activePage: { page: "connecting" },
 };
 
 const gameSlice = createSlice({
 	name: "game",
 	initialState,
 	reducers: {
-		setAsConnected: (state) => {
-			state.isConnected = true;
-		},
-		readyMatch: (state, action: PayloadAction<StartingData>) => {
-			state.matchStartingData = action.payload;
-			state.waitingTurn = !action.payload.isStartingFirst;
+		searchMatch: (state) => {
+			delete state.matchResult;
+			state.activePage = { page: "searching-match" };
 		},
 		forfeitWinMatch: (state) => {
 			state.matchResult = "opponent-forfeit";
@@ -59,13 +44,32 @@ const gameSlice = createSlice({
 		});
 
 		builder.addCase(initMatch.fulfilled, (state, action) => {
-			state.matchStartingData = action.payload;
+			delete state.matchResult;
+			state.activePage = { page: "in-match", matchStartingData: action.payload };
 			state.waitingTurn = !action.payload.isStartingFirst;
+			state.yourDeadPieces = [];
+			state.opponentsDeadPieces = [];
 		});
 	},
 });
 
 // Action creators are generated for each case reducer function
-export const { readyMatch, forfeitWinMatch, setAsConnected, waitingForTurn } = gameSlice.actions;
+export const { forfeitWinMatch, waitingForTurn, searchMatch /* rematch */ } = gameSlice.actions;
 
 export default gameSlice.reducer;
+
+export type MatchResult = "win" | "loss" | "stalemate" | "opponent-forfeit";
+
+type ActivePage =
+	| { page: "enter-name" } // to be implemented
+	| { page: "connecting" }
+	| { page: "searching-match" }
+	| { page: "in-match"; matchStartingData: StartingData };
+
+type GameState = {
+	waitingTurn: boolean;
+	yourDeadPieces: string[];
+	opponentsDeadPieces: string[];
+	matchResult?: MatchResult;
+	activePage: ActivePage;
+};
