@@ -6,6 +6,7 @@ import { Chess } from "../chess/chess";
 
 export const App: React.FC = () => {
 	const activePage = useSelector((state: RootState) => state.game.activePage);
+
 	const getView = () => {
 		switch (activePage.page) {
 			case "connecting":

@@ -1,11 +1,6 @@
-/* .board {
-  display: grid;
-  grid-template-columns: 100px 100px 100px 100px 100px 100px 100px 100px;
-  grid-template-rows: 100px 100px 100px 100px 100px 100px 100px 100px;
-} */
-
 .board {
-	display: inline-block;
+	margin: auto;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 .row {
 	display: flex;
