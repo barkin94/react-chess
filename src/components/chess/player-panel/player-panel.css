@@ -1,8 +1,0 @@
-.player-panel .dead-pieces {
-	display: flex;
-	flex-wrap: wrap;
-}
-
-.player-panel .dead-pieces .piece {
-	font-size: 55px;
-}

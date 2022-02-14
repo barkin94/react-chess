@@ -1,4 +1,4 @@
-import "./player-panel.css";
+import "./player-panel.scss";
 import { Piece } from "../piece/piece";
 import { extractPiecePropsFromId } from "../piece/piece-helper";
 

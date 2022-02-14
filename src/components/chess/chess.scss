@@ -1,0 +1,10 @@
+.chess {
+	display: grid;
+	grid-template-columns: 800px 1fr;
+
+	#player-panels {
+		display: grid;
+		grid-template-rows: 1fr 1fr;
+	}
+}
+

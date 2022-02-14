@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import "./square.css";
+import "./square.scss";
 import { Piece } from "../../piece/piece";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../redux/store";

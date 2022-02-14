@@ -1,4 +1,4 @@
-import "./chess.css";
+import "./chess.scss";
 import { Board } from "./board/board";
 import { PlayerPanel } from "./player-panel/player-panel";
 import { useSelector } from "react-redux";
@@ -14,13 +14,15 @@ export const Chess: React.FC = () => {
 
 	return (
 		<div className="chess">
-			<PlayerPanel name="You" isWaitingTurn={isWaitingTurn} killedPieceIds={yourKilledPieces}></PlayerPanel>
 			<Board></Board>
-			<PlayerPanel
-				name="Opponent"
-				isWaitingTurn={!isWaitingTurn}
-				killedPieceIds={opponentsKilledPieces}
-			></PlayerPanel>
+			<div id="player-panels">
+				<PlayerPanel
+					name="Opponent"
+					isWaitingTurn={!isWaitingTurn}
+					killedPieceIds={opponentsKilledPieces}
+				></PlayerPanel>
+				<PlayerPanel name="You" isWaitingTurn={isWaitingTurn} killedPieceIds={yourKilledPieces}></PlayerPanel>
+			</div>
 
 			<ReactModal isOpen={!!matchResult}>
 				<MatchResultMenu matchResult={matchResult!}></MatchResultMenu>

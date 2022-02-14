@@ -1,4 +1,4 @@
-import "./board.css";
+import "./board.scss";
 import { Square } from "./square/square";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";

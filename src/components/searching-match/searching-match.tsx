@@ -1,4 +1,4 @@
-import "./searching-match.css";
+import "./searching-match.scss";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";

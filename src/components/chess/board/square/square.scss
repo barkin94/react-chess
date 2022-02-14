@@ -1,0 +1,19 @@
+.square {
+	width: 100px;
+	height: 100px;
+	display: inline-block;
+	text-align: center;
+
+	&.chocolate {
+		background-color: #b96427;
+	}
+
+	&.wheat {
+		background-color: wheat;
+	}
+
+	&.available {
+		background-color: green !important;
+		cursor: pointer;
+	}
+}
