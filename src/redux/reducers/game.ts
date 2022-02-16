@@ -6,9 +6,13 @@ import { StartingData } from "./board";
 
 const initialState: GameState = {
 	waitingTurn: false,
-	yourDeadPieces: [],
-	opponentsDeadPieces: [],
+	yourCapturedPieces: [],
+	opponentsCapturedPieces: [],
 	activePage: { page: "connecting" },
+	score: {
+		player: 0,
+		opponent: 0,
+	},
 };
 
 const gameSlice = createSlice({
@@ -31,24 +35,37 @@ const gameSlice = createSlice({
 			state.waitingTurn = true;
 			state.matchResult = action.payload.matchResult;
 			if (action.payload.killedPieceId) {
-				state.opponentsDeadPieces.push(action.payload.killedPieceId);
+				state.opponentsCapturedPieces.push(action.payload.killedPieceId);
+			}
+
+			if (state.matchResult === "win") {
+				state.score.player++;
+			} else if (state.matchResult === "loss") {
+				state.score.opponent++;
 			}
 		});
 
 		builder.addCase(moveOpponentsPieceToTargetSquare.fulfilled, (state, action) => {
 			state.waitingTurn = false;
 			state.matchResult = action.payload.matchResult;
+
 			if (action.payload.killedPieceId) {
-				state.yourDeadPieces.push(action.payload.killedPieceId);
+				state.yourCapturedPieces.push(action.payload.killedPieceId);
+			}
+
+			if (state.matchResult === "win") {
+				state.score.player++;
+			} else if (state.matchResult === "loss") {
+				state.score.opponent++;
 			}
 		});
 
 		builder.addCase(initMatch.fulfilled, (state, action) => {
 			delete state.matchResult;
 			state.activePage = { page: "in-match", matchStartingData: action.payload };
-			state.waitingTurn = !action.payload.isStartingFirst;
-			state.yourDeadPieces = [];
-			state.opponentsDeadPieces = [];
+			state.waitingTurn = action.payload.playerColor === "black";
+			state.yourCapturedPieces = [];
+			state.opponentsCapturedPieces = [];
 		});
 	},
 });
@@ -68,8 +85,12 @@ type ActivePage =
 
 type GameState = {
 	waitingTurn: boolean;
-	yourDeadPieces: string[];
-	opponentsDeadPieces: string[];
+	yourCapturedPieces: string[];
+	opponentsCapturedPieces: string[];
 	matchResult?: MatchResult;
 	activePage: ActivePage;
+	score: {
+		opponent: number;
+		player: number;
+	};
 };

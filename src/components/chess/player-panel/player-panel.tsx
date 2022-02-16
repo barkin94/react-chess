@@ -1,22 +1,25 @@
 import "./player-panel.scss";
 import { Piece } from "../piece/piece";
 import { extractPiecePropsFromId } from "../piece/piece-helper";
+import { Spinner } from "./spinner/spinner";
 
 interface Props {
 	name: string;
 	isWaitingTurn: boolean;
-	killedPieceIds: string[];
+	capturedPieceIds: string[];
 }
 
 export const PlayerPanel: React.FC<Props> = (props) => {
 	return (
 		<div className="player-panel">
-			<div>{props.name}</div>
-			{!props.isWaitingTurn && <div>Sıra bunda</div>}
-			<div className="dead-pieces">
-				{props.killedPieceIds.map((id) => {
+			<div className="header">
+				<div>{props.name}</div>
+				{!props.isWaitingTurn && <Spinner height="1.5em"></Spinner>}
+			</div>
+			<div className="captured-pieces">
+				{props.capturedPieceIds.map((id) => {
 					const props = extractPiecePropsFromId(id);
-					return <Piece id={props.id} type={props.type} color={props.color}></Piece>;
+					return <Piece key={id} id={props.id} type={props.type} color={props.color}></Piece>;
 				})}
 			</div>
 		</div>

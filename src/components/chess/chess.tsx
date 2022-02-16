@@ -8,10 +8,11 @@ import { MatchResultMenu } from "./board/match-result-menu/match-result-menu";
 
 export const Chess: React.FC = () => {
 	const isWaitingTurn = useSelector((state: RootState) => state.game.waitingTurn);
-	const opponentsKilledPieces = useSelector((state: RootState) => state.game.opponentsDeadPieces);
-	const yourKilledPieces = useSelector((state: RootState) => state.game.yourDeadPieces);
+	const opponentsCapturedPieces = useSelector((state: RootState) => state.game.opponentsCapturedPieces);
+	const yourCapturedPieces = useSelector((state: RootState) => state.game.yourCapturedPieces);
 	const matchResult = useSelector((state: RootState) => state.game.matchResult);
 
+	// TODO: players should be able to enter their names before joining match queue.
 	return (
 		<div className="chess">
 			<Board></Board>
@@ -19,9 +20,13 @@ export const Chess: React.FC = () => {
 				<PlayerPanel
 					name="Opponent"
 					isWaitingTurn={!isWaitingTurn}
-					killedPieceIds={opponentsKilledPieces}
+					capturedPieceIds={opponentsCapturedPieces}
 				></PlayerPanel>
-				<PlayerPanel name="You" isWaitingTurn={isWaitingTurn} killedPieceIds={yourKilledPieces}></PlayerPanel>
+				<PlayerPanel
+					name="You"
+					isWaitingTurn={isWaitingTurn}
+					capturedPieceIds={yourCapturedPieces}
+				></PlayerPanel>
 			</div>
 
 			<ReactModal isOpen={!!matchResult}>

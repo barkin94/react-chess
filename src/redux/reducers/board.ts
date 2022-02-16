@@ -55,7 +55,6 @@ export type StartingData = {
 	squareData: { id: string; color: SquareColor }[][];
 	pieceLocations: PieceLocations;
 	playerColor: PieceColor;
-	isStartingFirst: boolean;
 };
 
 export type PieceLocations = { [squareId: string]: string };

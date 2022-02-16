@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
 import { initMatch } from "../../redux/thunks/init-match.thunk";
 import { getSocket } from "../../socket/socket-io";
+import { Spinner } from "../chess/player-panel/spinner/spinner";
 
 export const SearchingMatch: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
@@ -13,7 +14,7 @@ export const SearchingMatch: React.FC = () => {
 		socket.emit("search-match");
 
 		socket.on("matchFound", (args) => {
-			dispatch(initMatch({ isStartingFirst: args.isStartingFirst, playerColor: args.color }));
+			dispatch(initMatch({ playerColor: args.color }));
 		});
 
 		return () => {
@@ -21,5 +22,10 @@ export const SearchingMatch: React.FC = () => {
 		};
 	});
 
-	return <div className="searching-match">Searching Match...</div>;
+	return (
+		<div className="searching-match">
+			<Spinner height="2em"></Spinner>
+			<div>Searching Match...</div>
+		</div>
+	);
 };

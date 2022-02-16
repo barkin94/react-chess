@@ -1,5 +1,7 @@
+@use '..//board/square/square.scss' as square;
+
 .piece {
-	font-size: 70px;
+	font-size: calc(square.$height - 2em);
 	cursor: pointer;
 	-webkit-user-select: none;  /* Chrome all / Safari all */
 	-moz-user-select: none;     /* Firefox all */

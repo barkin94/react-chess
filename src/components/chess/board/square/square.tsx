@@ -40,24 +40,6 @@ export const Square: React.FC<SquareProps> = (props) => {
 		dispatch(toggleAction);
 	};
 
-	const onSquareClicked = () => {
-		if (!props.isHighlighted) return;
-
-		dispatch(moveSelectedPieceToTargetSquare(props.id));
-	};
-
-	const getClassName = (): string => {
-		const color = props.color;
-
-		let className = "square " + color;
-
-		if (props.isHighlighted) {
-			className = className + " available";
-		}
-
-		return className;
-	};
-
 	// When waiting for the player's turn, click events on the squares are disabled
 	//----------------------------------------------------------------------------------
 	const isOpponentsTurn = useSelector((state: RootState) => state.game.waitingTurn);
@@ -70,7 +52,13 @@ export const Square: React.FC<SquareProps> = (props) => {
 	//-----------------------------------------------------------------------------------
 
 	return (
-		<span className={getClassName()} onClick={onSquareClicked} ref={squareElemRef}>
+		<span className={"square " + props.color} ref={squareElemRef}>
+			{props.isHighlighted && (
+				<div
+					className="available-sign"
+					onClick={() => dispatch(moveSelectedPieceToTargetSquare(props.id))}
+				></div>
+			)}
 			{pieceProps && (
 				<Piece
 					id={pieceProps.id}

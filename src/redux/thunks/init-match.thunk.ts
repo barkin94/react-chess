@@ -5,7 +5,6 @@ import { PieceLocations, StartingData } from "../reducers/board";
 
 export type InitMatchArg = {
 	playerColor: PieceColor;
-	isStartingFirst: boolean;
 };
 
 export const initMatch = createAsyncThunk<StartingData, InitMatchArg, { extra: AppThunkExtraArgs }>(
@@ -23,7 +22,6 @@ export const initMatch = createAsyncThunk<StartingData, InitMatchArg, { extra: A
 
 		return {
 			playerColor: args.playerColor,
-			isStartingFirst: args.isStartingFirst,
 			squareData,
 			pieceLocations,
 		};

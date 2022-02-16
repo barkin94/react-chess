@@ -32,7 +32,6 @@ export const MatchResultMenu: React.FC<{ matchResult: MatchResult }> = (props) =
 		if (result === "accepted") {
 			dispatch(
 				initMatch({
-					isStartingFirst: matchStartingData.isStartingFirst,
 					playerColor: matchStartingData.playerColor,
 				})
 			);

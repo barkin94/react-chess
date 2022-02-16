@@ -1,8 +1,11 @@
+$height: calc(90vh / 8);
+
 .square {
-	width: 100px;
-	height: 100px;
+	width: $height;
+	height: $height;
 	display: inline-block;
 	text-align: center;
+	position: relative;
 
 	&.chocolate {
 		background-color: #b96427;
@@ -12,8 +15,22 @@
 		background-color: wheat;
 	}
 
-	&.available {
-		background-color: green !important;
+	.available-sign {
 		cursor: pointer;
+		height: 100%;
+		
+		&::before,
+		&::after {
+			content: "";
+			height: calc($height / 5);
+			width: calc($height / 5);
+			background-color: #a6bf87;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			border-radius: 50%;
+			opacity: 0.4;
+		}
 	}
 }

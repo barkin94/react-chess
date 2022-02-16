@@ -38,7 +38,7 @@ export class BoardInitializer {
 		for (let y = 0; y < 8; y++) {
 			squares.push([]);
 			for (let x = 0; x < 8; x++) {
-				const squareId = playerColor === "black" ? 8 * y + x : 64 - (8 * y + (8 - x));
+				const squareId = playerColor === "white" ? 8 * y + x : 64 - (8 * y + (8 - x));
 				const square = Square.create(`${squareId}`, { x, y });
 				(squares[y] as Square[]).push(square);
 			}
