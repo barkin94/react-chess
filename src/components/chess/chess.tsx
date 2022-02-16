@@ -11,24 +11,24 @@ export const Chess: React.FC = () => {
 	const opponentsCapturedPieces = useSelector((state: RootState) => state.game.opponentsCapturedPieces);
 	const yourCapturedPieces = useSelector((state: RootState) => state.game.yourCapturedPieces);
 	const matchResult = useSelector((state: RootState) => state.game.matchResult);
+	const playerScore = useSelector((state: RootState) => state.game.score.player);
+	const opponentScore = useSelector((state: RootState) => state.game.score.opponent);
 
 	// TODO: players should be able to enter their names before joining match queue.
 	return (
 		<div id="chess">
-			<Board></Board>
-			<div id="player-panels">
-				<PlayerPanel
-					name="Opponent"
-					isWaitingTurn={!isWaitingTurn}
-					capturedPieceIds={opponentsCapturedPieces}
-				></PlayerPanel>
-				<PlayerPanel
-					name="You"
-					isWaitingTurn={isWaitingTurn}
-					capturedPieceIds={yourCapturedPieces}
-				></PlayerPanel>
+			<PlayerPanel name="You" isWaitingTurn={isWaitingTurn} capturedPieceIds={yourCapturedPieces}></PlayerPanel>
+			<div id="middle-column">
+				<div id="scoreboard">
+					{playerScore} - {opponentScore}
+				</div>
+				<Board></Board>
 			</div>
-
+			<PlayerPanel
+				name="Opponent"
+				isWaitingTurn={!isWaitingTurn}
+				capturedPieceIds={opponentsCapturedPieces}
+			></PlayerPanel>
 			<ReactModal isOpen={!!matchResult}>
 				<MatchResultMenu matchResult={matchResult!}></MatchResultMenu>
 			</ReactModal>

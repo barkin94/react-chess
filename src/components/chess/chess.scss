@@ -1,6 +1,17 @@
 @use './board/square/square.scss' as square;
 
 #chess {
-	display: flex;
-	align-self: center;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+
+	#middle-column {
+		display: flex;
+		flex-direction: column;
+
+		#scoreboard {
+			flex-grow: 1;
+			align-self: center;
+			font-size: x-large;
+		}
+	}
 }
