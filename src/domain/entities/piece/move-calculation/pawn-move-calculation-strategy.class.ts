@@ -14,7 +14,7 @@ export class PawnMoveCalculationStrategy extends MoveCalculationStrategy {
 
 		const possibleMoves: Square[] = [];
 
-		const pieceOwner = piece.color === this._dataStore.getPlayerColor() ? "player" : "opponent";
+		const pieceOwner = piece.color === this._dataStore.getColor("player") ? "player" : "opponent";
 		const squarePieceIsOn = this._dataStore.getSquareById(piece.squareId);
 
 		const squareInTop = this._boardNavigator.getFirstSquareInDirection(squarePieceIsOn, "top", pieceOwner);
@@ -24,8 +24,8 @@ export class PawnMoveCalculationStrategy extends MoveCalculationStrategy {
 
 		const squareInTopLeft = this._boardNavigator.getFirstSquareInDirection(squarePieceIsOn, "top_left", pieceOwner);
 		if (squareInTopLeft) {
-			const piece = this._dataStore.getPieceOnSquare(squareInTopLeft);
-			if (piece && piece.color !== this._dataStore.getPlayerColor()) {
+			const targetPiece = this._dataStore.getPieceOnSquare(squareInTopLeft);
+			if (targetPiece && targetPiece.color !== this._dataStore.getColor(pieceOwner)) {
 				possibleMoves.push(squareInTopLeft);
 			}
 		}
@@ -36,8 +36,8 @@ export class PawnMoveCalculationStrategy extends MoveCalculationStrategy {
 			pieceOwner
 		);
 		if (squareInTopRight) {
-			const piece = this._dataStore.getPieceOnSquare(squareInTopRight);
-			if (piece && piece.color !== this._dataStore.getPlayerColor()) {
+			const targetPiece = this._dataStore.getPieceOnSquare(squareInTopRight);
+			if (targetPiece && targetPiece.color !== this._dataStore.getColor(pieceOwner)) {
 				possibleMoves.push(squareInTopRight);
 			}
 		}

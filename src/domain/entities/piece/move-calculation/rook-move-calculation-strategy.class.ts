@@ -1,8 +1,9 @@
 import { inject, injectable } from "inversify";
-import { BoardNavigator, Direction, Side } from "./board-navigator";
+import { BoardNavigator, Direction } from "./board-navigator";
 import { Square } from "../../board/square.class";
 import { MoveCalculationStrategy } from "./move-calculation-strategy.abstract";
 import { Piece } from "../piece.class";
+import { Side } from "../../../shared/types/side.type";
 
 @injectable()
 export class RookMoveCalculationStrategy extends MoveCalculationStrategy {
@@ -15,7 +16,7 @@ export class RookMoveCalculationStrategy extends MoveCalculationStrategy {
 		const square = this._dataStore.getSquareById(piece.squareId);
 
 		const possibleMoves: Square[] = [];
-		const side: Side = piece.color === this._dataStore.getPlayerColor() ? "player" : "opponent";
+		const side: Side = piece.color === this._dataStore.getColor("player") ? "player" : "opponent";
 
 		["top", "bottom", "left", "right"].forEach((direction) => {
 			const squaresInDirection = this._boardNavigator.getAllSquaresInDirection(

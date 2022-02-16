@@ -3,6 +3,7 @@ import { Square } from "./entities/board/square.class";
 import { Piece } from "./entities/piece/piece.class";
 import { Coordinates } from "./shared/types/coordinates.type";
 import { PieceColor } from "./shared/types/piece-color.type";
+import { Side } from "./shared/types/side.type";
 
 @injectable()
 export class DataStore {
@@ -17,9 +18,14 @@ export class DataStore {
 		this._pieceIdToEntityMap.forEach((piece) => delete piece.squareId);
 	}
 
-	getPlayerColor() {
+	getColor(side: Side): PieceColor {
 		if (!this._playerColor) throw new Error("player color not found");
-		return this._playerColor;
+
+		if (side === "player") {
+			return this._playerColor;
+		} else {
+			return this._playerColor === "white" ? "black" : "white";
+		}
 	}
 
 	setPlayerColor(color: PieceColor) {

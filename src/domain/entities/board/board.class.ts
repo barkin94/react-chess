@@ -51,8 +51,8 @@ export class Board {
 			pieceLocations: this.getPieceLocations(),
 		};
 
-		const isPlayerCheckMated = this.isCheckmated(this._dataStore.getPlayerColor());
-		const opponentColor: PieceColor = this._dataStore.getPlayerColor() === "black" ? "white" : "black";
+		const isPlayerCheckMated = this.isCheckmated(this._dataStore.getColor("player"));
+		const opponentColor: PieceColor = this._dataStore.getColor("opponent");
 		const isOpponentCheckMated = this.isCheckmated(opponentColor);
 
 		if (isPlayerCheckMated && isOpponentCheckMated) {

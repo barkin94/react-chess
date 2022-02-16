@@ -53,7 +53,6 @@ export const Square: React.FC<SquareProps> = (props) => {
 
 	return (
 		<span className={"square " + props.color} ref={squareElemRef}>
-			{props.id}
 			{pieceProps && (
 				<Piece
 					id={pieceProps.id}
