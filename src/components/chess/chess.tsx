@@ -14,7 +14,7 @@ export const Chess: React.FC = () => {
 
 	// TODO: players should be able to enter their names before joining match queue.
 	return (
-		<div className="chess">
+		<div id="chess">
 			<Board></Board>
 			<div id="player-panels">
 				<PlayerPanel

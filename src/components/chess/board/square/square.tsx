@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
 import "./square.scss";
+import React, { useEffect, useRef } from "react";
 import { Piece } from "../../piece/piece";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../redux/store";
@@ -53,12 +53,7 @@ export const Square: React.FC<SquareProps> = (props) => {
 
 	return (
 		<span className={"square " + props.color} ref={squareElemRef}>
-			{props.isHighlighted && (
-				<div
-					className="available-sign"
-					onClick={() => dispatch(moveSelectedPieceToTargetSquare(props.id))}
-				></div>
-			)}
+			{props.id}
 			{pieceProps && (
 				<Piece
 					id={pieceProps.id}
@@ -66,6 +61,12 @@ export const Square: React.FC<SquareProps> = (props) => {
 					color={pieceProps.color}
 					onClicked={onPieceClicked}
 				></Piece>
+			)}
+			{props.isHighlighted && (
+				<div
+					className="possible-move"
+					onClick={() => dispatch(moveSelectedPieceToTargetSquare(props.id))}
+				></div>
 			)}
 		</span>
 	);
