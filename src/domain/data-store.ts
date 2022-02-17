@@ -64,6 +64,8 @@ export class DataStore {
 	}
 
 	emptySquare(square: Square) {
+		const piece = this.getPieceOnSquare(square);
+		piece && delete piece.squareId;
 		this._pieceLocations.delete(square);
 	}
 

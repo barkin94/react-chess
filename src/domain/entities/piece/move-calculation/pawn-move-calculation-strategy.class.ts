@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { BoardNavigator } from "./board-navigator";
+import { BoardNavigator } from "./board-navigator.class";
 import { Square } from "../../board/square.class";
 import { MoveCalculationStrategy } from "./move-calculation-strategy.abstract";
 import { Piece } from "../piece.class";

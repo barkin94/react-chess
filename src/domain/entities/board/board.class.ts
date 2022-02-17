@@ -2,16 +2,17 @@ import { Piece } from "../piece/piece.class";
 import { inject, injectable } from "inversify";
 import { DataStore } from "../../data-store";
 import { Square } from "./square.class";
-import { MoveCalculationStrategyResolver } from "../piece/move-calculation/move-calculation-strategy-resolver";
 import { PieceColor } from "../../shared/types/piece-color.type";
+import { MoveCalculator } from "../piece/move-calculation/move-calculator.class";
+import { Side } from "../../shared/types/side.type";
 
 @injectable()
 export class Board {
 	@inject(DataStore)
 	private _dataStore!: DataStore;
 
-	@inject(MoveCalculationStrategyResolver)
-	private _moveCalculationStrategyResolver!: MoveCalculationStrategyResolver;
+	@inject(MoveCalculator)
+	private _moveCalculator!: MoveCalculator;
 
 	getPieceLocations(): PieceLocations {
 		return this._dataStore.getPieceLocations();
@@ -24,7 +25,7 @@ export class Board {
 
 		if (!currentLocation) throw new Error("square matching with square id not found");
 
-		return this._moveCalculationStrategyResolver.resolve(piece.type).getPossibleMoves(piece);
+		return this._moveCalculator.getPossibleMoves(piece);
 	}
 
 	movePiece(pieceId: string, targetSquareId: string): MoveResult {
@@ -35,14 +36,13 @@ export class Board {
 		const piece = this._dataStore.getPieceById(pieceId);
 		if (!piece.squareId) throw new Error("piece is not on the board");
 
-		const currentSquare = this._dataStore.getSquareById(piece.squareId);
-		this._dataStore.emptySquare(currentSquare);
-
-		piece.squareId = targetSquareId;
 		const targetSquare = this._dataStore.getSquareById(targetSquareId);
 
 		const opponentPieceOnTargetSquare = this._dataStore.getPieceOnSquare(targetSquare);
-		if (opponentPieceOnTargetSquare) delete opponentPieceOnTargetSquare.squareId;
+		if (opponentPieceOnTargetSquare) this._dataStore.emptySquare(targetSquare);
+
+		const currentSquare = this._dataStore.getSquareById(piece.squareId);
+		this._dataStore.emptySquare(currentSquare);
 
 		this._dataStore.insertPieceOnSquare(piece, targetSquare);
 
@@ -51,9 +51,8 @@ export class Board {
 			pieceLocations: this.getPieceLocations(),
 		};
 
-		const isPlayerCheckMated = this.isCheckmated(this._dataStore.getColor("player"));
-		const opponentColor: PieceColor = this._dataStore.getColor("opponent");
-		const isOpponentCheckMated = this.isCheckmated(opponentColor);
+		const isPlayerCheckMated = this.isCheckmated("player");
+		const isOpponentCheckMated = this.isCheckmated("opponent");
 
 		if (isPlayerCheckMated && isOpponentCheckMated) {
 			moveResult.matchResult = "draw";
@@ -71,15 +70,15 @@ export class Board {
 		if (!piece.squareId) throw new Error("piece is not on the board");
 
 		const targetSquare = this._dataStore.getSquareById(targetSquareId);
-		const moveCalculationStrategy = this._moveCalculationStrategyResolver.resolve(piece.type);
-		const canMoveToLocation = moveCalculationStrategy
+		const canMoveToLocation = this._moveCalculator
 			.getPossibleMoves(piece)
 			.find((possibleMoveSquare) => possibleMoveSquare.id === targetSquare.id);
 
 		return canMoveToLocation;
 	}
 
-	private isCheckmated(sideColor: PieceColor) {
+	private isCheckmated(side: Side) {
+		const sideColor = this._dataStore.getColor(side);
 		const checkmateSquares = this.getCheckmateSquaresOfSide(sideColor);
 		const checkmateSquaresTargetedByOpponent: Square[] = [];
 
@@ -109,7 +108,7 @@ export class Board {
 		}
 
 		const currentLocationOfKing = this._dataStore.getSquareById(king.squareId);
-		const possibleMovesOfKing = this._moveCalculationStrategyResolver.resolve(king.type).getPossibleMoves(king);
+		const possibleMovesOfKing = this._moveCalculator.getPossibleMoves(king);
 
 		return [currentLocationOfKing, ...possibleMovesOfKing];
 	}
