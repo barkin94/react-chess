@@ -21,7 +21,7 @@ export const moveSelectedPieceToTargetSquare = createAsyncThunk<MoveResult, stri
 		});
 
 		return {
-			killedPieceId: moveResult.killedPiece?.id,
+			capturedPieceId: moveResult.capturedPiece?.id,
 			pieceLocations,
 			matchResult: moveResult.matchResult,
 		};

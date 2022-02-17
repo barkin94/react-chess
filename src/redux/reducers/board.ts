@@ -61,8 +61,8 @@ export type PieceLocations = { [squareId: string]: string };
 
 export type MoveResult = {
 	pieceLocations: PieceLocations;
-	killedPieceId?: string;
-	matchResult?: "win" | "loss" | "stalemate";
+	capturedPieceId?: string;
+	matchResult?: "win" | "loss" | "draw";
 };
 
 type BoardState = {

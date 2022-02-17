@@ -28,7 +28,7 @@ export const MatchEndContent: React.FC<MatchEndContentProps> = (props) => {
 				return "You win!";
 			case "loss":
 				return "You lost!";
-			case "stalemate":
+			case "draw":
 				return "Stalemate!";
 			case "opponent-forfeit":
 				return "Opponent left the match!";

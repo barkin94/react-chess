@@ -18,18 +18,23 @@ export class KingMoveCalculationStrategy extends MoveCalculationStrategy {
 		const possibleMoves: Square[] = [];
 		const side: Side = piece.color === this._dataStore.getColor("player") ? "player" : "opponent";
 
-		["top", "bottom", "left", "right", "top_left", "bottom_left", "top_right", "bottom_right"].forEach(
-			(direction) => {
-				const squareInDirection = this._boardNavigator.getFirstSquareInDirection(
-					square,
-					direction as Direction,
-					side
-				);
-				if (squareInDirection) {
-					possibleMoves.push(...this.endSequenceWhenEncounteredPiece([squareInDirection], piece.color));
-				}
+		const directions: Direction[] = [
+			"top",
+			"bottom",
+			"left",
+			"right",
+			"top_left",
+			"bottom_left",
+			"top_right",
+			"bottom_right",
+		];
+
+		directions.forEach((direction) => {
+			const squareInDirection = this._boardNavigator.getFirstSquareInDirection(square, direction, side);
+			if (squareInDirection) {
+				possibleMoves.push(...this.endSequenceWhenEncounteredPiece([squareInDirection], piece.color));
 			}
-		);
+		});
 
 		return possibleMoves;
 	}

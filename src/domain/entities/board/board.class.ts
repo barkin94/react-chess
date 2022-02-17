@@ -47,7 +47,7 @@ export class Board {
 		this._dataStore.insertPieceOnSquare(piece, targetSquare);
 
 		const moveResult: MoveResult = {
-			killedPiece: opponentPieceOnTargetSquare,
+			capturedPiece: opponentPieceOnTargetSquare,
 			pieceLocations: this.getPieceLocations(),
 		};
 
@@ -56,7 +56,7 @@ export class Board {
 		const isOpponentCheckMated = this.isCheckmated(opponentColor);
 
 		if (isPlayerCheckMated && isOpponentCheckMated) {
-			moveResult.matchResult = "stalemate";
+			moveResult.matchResult = "draw";
 		} else if (isPlayerCheckMated) {
 			moveResult.matchResult = "loss";
 		} else if (isOpponentCheckMated) {
@@ -127,7 +127,7 @@ export class Board {
 
 export type PieceLocations = Map<Square, Piece>;
 export type MoveResult = {
-	killedPiece: Piece | undefined;
+	capturedPiece: Piece | undefined;
 	pieceLocations: PieceLocations;
-	matchResult?: "win" | "loss" | "stalemate";
+	matchResult?: "win" | "loss" | "draw";
 };

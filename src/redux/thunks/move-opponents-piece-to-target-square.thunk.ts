@@ -9,7 +9,7 @@ export type ArgType = {
 export const moveOpponentsPieceToTargetSquare = createAsyncThunk<MoveResult, ArgType, { extra: AppThunkExtraArgs }>(
 	"moveOpponentPiece",
 	(args: ArgType, options) => {
-		const { killedPiece, pieceLocations, matchResult } = options.extra.movePiece.execute({
+		const { capturedPiece, pieceLocations, matchResult } = options.extra.movePiece.execute({
 			pieceId: args.pieceId,
 			targetSquareId: args.targetSquareId,
 		});
@@ -18,7 +18,7 @@ export const moveOpponentsPieceToTargetSquare = createAsyncThunk<MoveResult, Arg
 		pieceLocations.forEach((piece, square) => (pieceLocationsForReducer[square.id] = piece.id));
 
 		return {
-			killedPieceId: killedPiece?.id,
+			capturedPieceId: capturedPiece?.id,
 			pieceLocations: pieceLocationsForReducer,
 			matchResult,
 		};

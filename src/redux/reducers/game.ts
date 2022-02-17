@@ -34,8 +34,8 @@ const gameSlice = createSlice({
 		builder.addCase(moveSelectedPieceToTargetSquare.fulfilled, (state, action) => {
 			state.waitingTurn = true;
 			state.matchResult = action.payload.matchResult;
-			if (action.payload.killedPieceId) {
-				state.opponentsCapturedPieces.push(action.payload.killedPieceId);
+			if (action.payload.capturedPieceId) {
+				state.opponentsCapturedPieces.push(action.payload.capturedPieceId);
 			}
 
 			if (state.matchResult === "win") {
@@ -49,8 +49,8 @@ const gameSlice = createSlice({
 			state.waitingTurn = false;
 			state.matchResult = action.payload.matchResult;
 
-			if (action.payload.killedPieceId) {
-				state.yourCapturedPieces.push(action.payload.killedPieceId);
+			if (action.payload.capturedPieceId) {
+				state.yourCapturedPieces.push(action.payload.capturedPieceId);
 			}
 
 			if (state.matchResult === "win") {
@@ -75,7 +75,7 @@ export const { forfeitWinMatch, waitingForTurn, searchMatch /* rematch */ } = ga
 
 export default gameSlice.reducer;
 
-export type MatchResult = "win" | "loss" | "stalemate" | "opponent-forfeit";
+export type MatchResult = "win" | "loss" | "draw" | "opponent-forfeit";
 
 type ActivePage =
 	| { page: "enter-name" } // to be implemented

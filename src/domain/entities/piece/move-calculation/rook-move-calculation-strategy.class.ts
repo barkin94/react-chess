@@ -18,12 +18,9 @@ export class RookMoveCalculationStrategy extends MoveCalculationStrategy {
 		const possibleMoves: Square[] = [];
 		const side: Side = piece.color === this._dataStore.getColor("player") ? "player" : "opponent";
 
-		["top", "bottom", "left", "right"].forEach((direction) => {
-			const squaresInDirection = this._boardNavigator.getAllSquaresInDirection(
-				square,
-				direction as Direction,
-				side
-			);
+		const directions: Direction[] = ["top", "bottom", "left", "right"];
+		directions.forEach((direction) => {
+			const squaresInDirection = this._boardNavigator.getAllSquaresInDirection(square, direction, side);
 			possibleMoves.push(...this.endSequenceWhenEncounteredPiece(squaresInDirection, piece.color));
 		});
 

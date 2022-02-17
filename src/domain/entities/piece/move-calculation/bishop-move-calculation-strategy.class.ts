@@ -18,12 +18,10 @@ export class BishopMoveCalculationStrategy extends MoveCalculationStrategy {
 		const possibleMoves: Square[] = [];
 		const side: Side = piece.color === this._dataStore.getColor("player") ? "player" : "opponent";
 
-		["top_left", "bottom_left", "top_right", "bottom_right"].forEach((direction) => {
-			const squaresInDirection = this._boardNavigator.getAllSquaresInDirection(
-				square,
-				direction as Direction,
-				side
-			);
+		const directions: Direction[] = ["top_left", "bottom_left", "top_right", "bottom_right"];
+
+		directions.forEach((direction) => {
+			const squaresInDirection = this._boardNavigator.getAllSquaresInDirection(square, direction, side);
 			possibleMoves.push(...this.endSequenceWhenEncounteredPiece(squaresInDirection, piece.color));
 		});
 

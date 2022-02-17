@@ -18,16 +18,21 @@ export class QueenMoveCalculationStrategy extends MoveCalculationStrategy {
 		const possibleMoves: Square[] = [];
 		const side: Side = piece.color === this._dataStore.getColor("player") ? "player" : "opponent";
 
-		["top", "bottom", "left", "right", "top_left", "bottom_left", "top_right", "bottom_right"].forEach(
-			(direction) => {
-				const squaresInDirection = this._boardNavigator.getAllSquaresInDirection(
-					square,
-					direction as Direction,
-					side
-				);
-				possibleMoves.push(...this.endSequenceWhenEncounteredPiece(squaresInDirection, piece.color));
-			}
-		);
+		const directions: Direction[] = [
+			"bottom",
+			"bottom_left",
+			"bottom_right",
+			"left",
+			"right",
+			"top",
+			"top_left",
+			"top_right",
+		];
+
+		directions.forEach((direction) => {
+			const squaresInDirection = this._boardNavigator.getAllSquaresInDirection(square, direction, side);
+			possibleMoves.push(...this.endSequenceWhenEncounteredPiece(squaresInDirection, piece.color));
+		});
 
 		return possibleMoves;
 	}
