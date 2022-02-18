@@ -1,9 +1,9 @@
-import "./spinner.scss";
+import styles from "./spinner.module.scss";
 
 export const Spinner: React.FC<{ height: string }> = (props) => {
 	return (
 		<svg
-			className="spinner"
+			className={styles.spinner}
 			version="1.1"
 			id="Capa_1"
 			x="0px"

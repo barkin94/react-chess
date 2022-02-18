@@ -1,4 +1,4 @@
-import "./searching-match.scss";
+import styles from "./searching-match.module.scss";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../redux/store";
@@ -23,7 +23,7 @@ export const SearchingMatch: React.FC = () => {
 	});
 
 	return (
-		<div className="searching-match">
+		<div className={styles["searching-match"]}>
 			<Spinner height="2em"></Spinner>
 			<div>Searching Match...</div>
 		</div>

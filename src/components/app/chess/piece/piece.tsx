@@ -1,6 +1,6 @@
 import { PieceColor } from "../../../../domain/shared/types/piece-color.type";
 import { PieceType } from "../../../../domain/shared/types/piece-type.type";
-import "./piece.scss";
+import styles from "./piece.module.scss";
 
 export interface PieceProps {
 	type: PieceType;
@@ -22,7 +22,7 @@ export const Piece: React.FC<PieceProps> = (props) => {
 	return (
 		<span
 			onClick={props.onClicked}
-			className={"piece"}
+			className={styles.piece}
 			dangerouslySetInnerHTML={{
 				__html: icons[props.type][props.color],
 			}}
