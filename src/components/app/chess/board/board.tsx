@@ -1,4 +1,4 @@
-import "./board.scss";
+import styles from "./board.module.scss";
 import { Square } from "./square/square";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
@@ -19,9 +19,9 @@ export const Board: React.FC = () => {
 	};
 
 	return (
-		<div className="board">
+		<div className={styles.board}>
 			{squareData.map((row, rowIndex) => (
-				<div className="row" key={rowIndex}>
+				<div className={styles.row} key={rowIndex}>
 					{row.map((prop) => (
 						<Square
 							key={prop.id}

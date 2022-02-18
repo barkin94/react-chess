@@ -1,4 +1,4 @@
-import "./square.scss";
+import styles from "./square.module.scss";
 import React, { useEffect, useRef } from "react";
 import { Piece } from "../../piece/piece";
 import { useDispatch, useSelector } from "react-redux";
@@ -43,7 +43,7 @@ export const Square: React.FC<SquareProps> = (props) => {
 	// When waiting for the player's turn, click events on the squares are disabled
 	//----------------------------------------------------------------------------------
 	const isOpponentsTurn = useSelector((state: RootState) => state.game.waitingTurn);
-	const squareElemRef = useRef(null);
+	const squareElemRef = useRef<HTMLElement>(null);
 	useEffect(() => {
 		(squareElemRef.current as unknown as HTMLElement).onclick = (event) => {
 			isOpponentsTurn && event.stopPropagation();
@@ -52,7 +52,7 @@ export const Square: React.FC<SquareProps> = (props) => {
 	//-----------------------------------------------------------------------------------
 
 	return (
-		<span className={"square " + props.color} ref={squareElemRef}>
+		<span className={`${styles.square} ${styles[props.color]}`} ref={squareElemRef}>
 			{pieceProps && (
 				<Piece
 					id={pieceProps.id}
@@ -63,7 +63,7 @@ export const Square: React.FC<SquareProps> = (props) => {
 			)}
 			{props.isHighlighted && (
 				<div
-					className="possible-move"
+					className={styles["possible-move"]}
 					onClick={() => dispatch(moveSelectedPieceToTargetSquare(props.id))}
 				></div>
 			)}

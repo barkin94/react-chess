@@ -1,4 +1,4 @@
-import "./chess.scss";
+import styles from "./chess.module.scss";
 import { Board } from "./board/board";
 import { PlayerPanel } from "./player-panel/player-panel";
 import { useSelector } from "react-redux";
@@ -16,10 +16,10 @@ export const Chess: React.FC = () => {
 
 	// TODO: players should be able to enter their names before joining match queue.
 	return (
-		<div id="chess">
+		<div id={styles.chess}>
 			<PlayerPanel name="You" isWaitingTurn={isWaitingTurn} capturedPieceIds={yourCapturedPieces}></PlayerPanel>
-			<div id="middle-column">
-				<div id="scoreboard">
+			<div id={styles["middle-column"]}>
+				<div id={styles.scoreboard}>
 					{playerScore} - {opponentScore}
 				</div>
 				<Board></Board>
