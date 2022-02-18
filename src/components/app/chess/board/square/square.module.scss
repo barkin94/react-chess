@@ -15,6 +15,10 @@ $height: calc(90vh / 8);
 		background-color: wheat;
 	}
 
+	&.piece-selected {
+		background-color: #fdfd5b  !important;
+	}
+
 	.possible-move {
 		cursor: pointer;
 		height: 100%;

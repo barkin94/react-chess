@@ -1,5 +1,5 @@
 import styles from "./square.module.scss";
-import React, { useEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { Piece } from "../../piece/piece";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../../redux/store";
@@ -20,6 +20,7 @@ export const Square: React.FC<SquareProps> = (props) => {
 
 	const selectedPieceId = useSelector((state: RootState) => state.board.selectedPieceId);
 	const pieceId = useSelector((state: RootState) => state.board.pieceLocations[props.id]);
+	const pieceProps = pieceId ? extractPiecePropsFromId(pieceId) : null;
 	const playerColor = useSelector((state: RootState) => {
 		if (state.game.activePage.page !== "in-match") {
 			throw new Error('active page needs to be "in-match"');
@@ -27,8 +28,6 @@ export const Square: React.FC<SquareProps> = (props) => {
 
 		return state.game.activePage.matchStartingData.playerColor;
 	});
-
-	const pieceProps = pieceId ? extractPiecePropsFromId(pieceId) : null;
 
 	const onPieceClicked = () => {
 		if (!pieceProps || pieceProps.color !== playerColor) return;
@@ -42,17 +41,24 @@ export const Square: React.FC<SquareProps> = (props) => {
 
 	// When waiting for the player's turn, click events on the squares are disabled
 	//----------------------------------------------------------------------------------
-	const isOpponentsTurn = useSelector((state: RootState) => state.game.waitingTurn);
 	const squareElemRef = useRef<HTMLElement>(null);
-	useEffect(() => {
-		(squareElemRef.current as unknown as HTMLElement).onclick = (event) => {
-			isOpponentsTurn && event.stopPropagation();
-		};
+	const isOpponentsTurn = useSelector((state: RootState) => state.game.waitingTurn);
+
+	useLayoutEffect(() => {
+		squareElemRef.current!.onclick = isOpponentsTurn ? (event) => event.stopPropagation() : null;
 	}, [isOpponentsTurn]);
 	//-----------------------------------------------------------------------------------
 
+	const getClassName = () => {
+		let className = `${styles.square} ${styles[props.color]}`;
+		if (pieceProps && selectedPieceId && pieceProps.id === selectedPieceId) {
+			className += ` ${styles["piece-selected"]}`;
+		}
+		return className;
+	};
+
 	return (
-		<span className={`${styles.square} ${styles[props.color]}`} ref={squareElemRef}>
+		<span className={getClassName()} ref={squareElemRef}>
 			{pieceProps && (
 				<Piece
 					id={pieceProps.id}
