@@ -1,10 +1,10 @@
 import "./searching-match.scss";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store";
-import { initMatch } from "../../redux/thunks/init-match.thunk";
-import { getSocket } from "../../socket/socket-io";
-import { Spinner } from "../chess/player-panel/spinner/spinner";
+import { AppDispatch } from "../../../redux/store";
+import { initMatch } from "../../../redux/thunks/init-match.thunk";
+import { getSocket } from "../../../socket/socket-io";
+import { Spinner } from "../../shared/spinner/spinner";
 
 export const SearchingMatch: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();

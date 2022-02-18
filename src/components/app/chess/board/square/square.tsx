@@ -2,12 +2,12 @@ import "./square.scss";
 import React, { useEffect, useRef } from "react";
 import { Piece } from "../../piece/piece";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../../redux/store";
+import { AppDispatch, RootState } from "../../../../../redux/store";
 import { extractPiecePropsFromId } from "../../piece/piece-helper";
-import { toggleOffAvailableMoves } from "../../../../redux/reducers/board";
-import { moveSelectedPieceToTargetSquare } from "../../../../redux/thunks/move-selected-piece-to-target-square.thunk";
-import { SquareColor } from "../../../../domain/shared/types/square-color.type";
-import { toggleOnAvailableMoves } from "../../../../redux/thunks/toggle-on-available-moves.thunk";
+import { toggleOffAvailableMoves } from "../../../../../redux/reducers/board";
+import { moveSelectedPieceToTargetSquare } from "../../../../../redux/thunks/move-selected-piece-to-target-square.thunk";
+import { SquareColor } from "../../../../../domain/shared/types/square-color.type";
+import { toggleOnAvailableMoves } from "../../../../../redux/thunks/toggle-on-available-moves.thunk";
 
 export interface SquareProps {
 	id: string;

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { MatchResult } from "../../../../../redux/reducers/game";
-import { getSocket } from "../../../../../socket/socket-io";
+import { MatchResult } from "../../../../../../redux/reducers/game";
+import { getSocket } from "../../../../../../socket/socket-io";
 
 interface MatchEndContentProps {
 	matchResult: MatchResult;

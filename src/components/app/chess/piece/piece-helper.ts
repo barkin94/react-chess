@@ -1,4 +1,4 @@
-import { PieceType } from "../../../domain/shared/types/piece-type.type";
+import { PieceType } from "../../../../domain/shared/types/piece-type.type";
 import { PieceProps } from "./piece";
 
 export const extractPiecePropsFromId = (id: string): PieceProps => {

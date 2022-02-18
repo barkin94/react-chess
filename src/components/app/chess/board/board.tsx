@@ -1,7 +1,7 @@
 import "./board.scss";
 import { Square } from "./square/square";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
+import { RootState } from "../../../../redux/store";
 import React from "react";
 
 export const Board: React.FC = () => {

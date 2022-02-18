@@ -1,4 +1,4 @@
-import { getSocket } from "../../../../../socket/socket-io";
+import { getSocket } from "../../../../../../socket/socket-io";
 
 interface RematchRequestReceivedContentProps {
 	onResponse: (result: "accepted" | "rejected") => void;

@@ -1,5 +1,3 @@
-@use './board/square/square.scss' as square;
-
 #chess {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;

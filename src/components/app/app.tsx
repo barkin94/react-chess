@@ -1,8 +1,8 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { SearchingMatch } from "../searching-match/searching-match";
-import { Chess } from "../chess/chess";
+import { SearchingMatch } from "./searching-match/searching-match";
+import { Chess } from "./chess/chess";
 
 export const App: React.FC = () => {
 	const activePage = useSelector((state: RootState) => state.game.activePage);

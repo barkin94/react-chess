@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { MatchResult, searchMatch } from "../../../../redux/reducers/game";
-import { AppDispatch, RootState } from "../../../../redux/store";
-import { initMatch } from "../../../../redux/thunks/init-match.thunk";
-import { getSocket } from "../../../../socket/socket-io";
+import { MatchResult, searchMatch } from "../../../../../redux/reducers/game";
+import { AppDispatch, RootState } from "../../../../../redux/store";
+import { initMatch } from "../../../../../redux/thunks/init-match.thunk";
+import { getSocket } from "../../../../../socket/socket-io";
 import { MatchEndContent } from "./content/match-end-content";
 import { OpponenetRejectedRematchContent } from "./content/opponent-rejected-rematch-content";
 import { RematchRequestReceivedContent } from "./content/rematch-request-received-content";

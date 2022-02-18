@@ -1,7 +1,7 @@
 import "./player-panel.scss";
 import { Piece } from "../piece/piece";
 import { extractPiecePropsFromId } from "../piece/piece-helper";
-import { Spinner } from "./spinner/spinner";
+import { Spinner } from "../../../shared/spinner/spinner";
 
 interface Props {
 	name: string;

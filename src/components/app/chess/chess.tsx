@@ -2,7 +2,7 @@ import "./chess.scss";
 import { Board } from "./board/board";
 import { PlayerPanel } from "./player-panel/player-panel";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { RootState } from "../../../redux/store";
 import ReactModal from "react-modal";
 import { MatchResultMenu } from "./board/match-result-menu/match-result-menu";
 

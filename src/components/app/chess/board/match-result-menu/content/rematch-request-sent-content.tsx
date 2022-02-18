@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getSocket } from "../../../../../socket/socket-io";
+import { getSocket } from "../../../../../../socket/socket-io";
 
 interface RematchRequestSentContentProps {
 	onResponse: (result: "accepted" | "rejected") => void;
