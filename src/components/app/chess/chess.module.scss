@@ -1,15 +1,28 @@
 #chess {
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	justify-content: space-around;
 
-	#middle-column {
-		display: flex;
-		flex-direction: column;
+	#match-header {
+		grid-template-columns: 1fr 1fr 1fr;
+		display: grid;
+		font-size: x-large;
+		text-align: center;
 
-		#scoreboard {
-			flex-grow: 1;
-			align-self: center;
-			font-size: x-large;
+		:last-child {
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+
+			button {
+				margin-right: 1em;
+			}
 		}
+	}
+
+	#match-body {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
 	}
 }

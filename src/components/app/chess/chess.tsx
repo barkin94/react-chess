@@ -16,22 +16,34 @@ export const Chess: React.FC = () => {
 
 	// TODO: players should be able to enter their names before joining match queue.
 	return (
-		<div id={styles.chess}>
-			<PlayerPanel name="You" isWaitingTurn={isWaitingTurn} capturedPieceIds={yourCapturedPieces}></PlayerPanel>
-			<div id={styles["middle-column"]}>
-				<div id={styles.scoreboard}>
-					{playerScore} - {opponentScore}
+		<>
+			<div id={styles.chess}>
+				<div id={styles["match-header"]}>
+					<span></span>
+					<span>
+						{playerScore} - {opponentScore}
+					</span>
+					<span>
+						<button>Give up</button>
+					</span>
 				</div>
-				<Board></Board>
+				<div id={styles["match-body"]}>
+					<PlayerPanel
+						name="You"
+						isWaitingTurn={isWaitingTurn}
+						capturedPieceIds={yourCapturedPieces}
+					></PlayerPanel>
+					<Board></Board>
+					<PlayerPanel
+						name="Opponent"
+						isWaitingTurn={!isWaitingTurn}
+						capturedPieceIds={opponentsCapturedPieces}
+					></PlayerPanel>
+				</div>
 			</div>
-			<PlayerPanel
-				name="Opponent"
-				isWaitingTurn={!isWaitingTurn}
-				capturedPieceIds={opponentsCapturedPieces}
-			></PlayerPanel>
 			<ReactModal isOpen={!!matchResult}>
 				<MatchResultMenu matchResult={matchResult!}></MatchResultMenu>
 			</ReactModal>
-		</div>
+		</>
 	);
 };
