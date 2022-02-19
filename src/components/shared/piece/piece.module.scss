@@ -1,4 +1,4 @@
-@use '../board/square/square.module.scss' as square;
+@use '../../app/chess/board/square/square.module.scss' as square;
 
 .piece {
 	font-size: calc(square.$height - 4vh);

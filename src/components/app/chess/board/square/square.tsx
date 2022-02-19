@@ -1,9 +1,9 @@
 import styles from "./square.module.scss";
 import React, { useLayoutEffect, useRef } from "react";
-import { Piece } from "../../piece/piece";
+import { Piece } from "../../../../shared/piece/piece";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../../redux/store";
-import { extractPiecePropsFromId } from "../../piece/piece-helper";
+import { extractPiecePropsFromId } from "../../../../shared/piece/piece-helper";
 import { toggleOffAvailableMoves } from "../../../../../redux/reducers/board";
 import { moveSelectedPieceToTargetSquare } from "../../../../../redux/thunks/move-selected-piece-to-target-square.thunk";
 import { SquareColor } from "../../../../../domain/shared/types/square-color.type";

@@ -1,6 +1,6 @@
 import styles from "./player-panel.module.scss";
-import { Piece } from "../piece/piece";
-import { extractPiecePropsFromId } from "../piece/piece-helper";
+import { Piece } from "../../../shared/piece/piece";
+import { extractPiecePropsFromId } from "../../../shared/piece/piece-helper";
 import { Spinner } from "../../../shared/spinner/spinner";
 
 interface Props {

@@ -1,10 +1,12 @@
 import styles from "./chess.module.scss";
 import { Board } from "./board/board";
 import { PlayerPanel } from "./player-panel/player-panel";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../redux/store";
 import ReactModal from "react-modal";
-import { MatchResultMenu } from "./board/match-result-menu/match-result-menu";
+import { MatchResultMenu } from "./match-result-menu/match-result-menu";
+import { useState } from "react";
+import { searchMatch } from "../../../redux/reducers/game";
 
 export const Chess: React.FC = () => {
 	const isWaitingTurn = useSelector((state: RootState) => state.game.waitingTurn);
@@ -13,6 +15,9 @@ export const Chess: React.FC = () => {
 	const matchResult = useSelector((state: RootState) => state.game.matchResult);
 	const playerScore = useSelector((state: RootState) => state.game.score.player);
 	const opponentScore = useSelector((state: RootState) => state.game.score.opponent);
+
+	const [giveUpModalActive, setGiveUpModalActive] = useState(false);
+	const dispatch = useDispatch<AppDispatch>();
 
 	// TODO: players should be able to enter their names before joining match queue.
 	return (
@@ -24,7 +29,7 @@ export const Chess: React.FC = () => {
 						{playerScore} - {opponentScore}
 					</span>
 					<span>
-						<button>Give up</button>
+						<button onClick={() => setGiveUpModalActive(true)}>Leave Match</button>
 					</span>
 				</div>
 				<div id={styles["match-body"]}>
@@ -41,8 +46,16 @@ export const Chess: React.FC = () => {
 					></PlayerPanel>
 				</div>
 			</div>
-			<ReactModal isOpen={!!matchResult}>
-				<MatchResultMenu matchResult={matchResult!}></MatchResultMenu>
+
+			<ReactModal isOpen={!!matchResult || giveUpModalActive}>
+				{matchResult && <MatchResultMenu matchResult={matchResult!}></MatchResultMenu>}
+				{giveUpModalActive && (
+					<div>
+						<div>Are you sure?</div>
+						<button onClick={() => dispatch(searchMatch())}>Yes</button>
+						<button onClick={() => setGiveUpModalActive(false)}>No</button>
+					</div>
+				)}
 			</ReactModal>
 		</>
 	);

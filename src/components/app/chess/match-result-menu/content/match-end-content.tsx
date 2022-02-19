@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { MatchResult } from "../../../../../../redux/reducers/game";
-import { getSocket } from "../../../../../../socket/socket-io";
+import { MatchResult } from "../../../../../redux/reducers/game";
+import { getSocket } from "../../../../../socket/socket-io";
 
 interface MatchEndContentProps {
 	matchResult: MatchResult;
@@ -29,7 +29,7 @@ export const MatchEndContent: React.FC<MatchEndContentProps> = (props) => {
 			case "loss":
 				return "You lose!";
 			case "draw":
-				return "Stalemate!";
+				return "Draw!";
 			case "opponent-forfeit":
 				return "Opponent left the match!";
 			default:
