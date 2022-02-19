@@ -2,7 +2,7 @@ interface RematchRequestContent {
 	onSearchMatchBtnClick: () => void;
 }
 
-export const OpponenetRejectedRematchContent: React.FC<RematchRequestContent> = (props) => {
+export const OpponentRejectedRematchContent: React.FC<RematchRequestContent> = (props) => {
 	return (
 		<div>
 			<div>Opponent rejected your rematch request.</div>

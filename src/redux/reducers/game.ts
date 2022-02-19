@@ -21,10 +21,18 @@ const gameSlice = createSlice({
 	reducers: {
 		searchMatch: (state) => {
 			delete state.matchResult;
+			state.score = {
+				opponent: 0,
+				player: 0,
+			};
 			state.activePage = { page: "searching-match" };
 		},
 		forfeitWinMatch: (state) => {
 			state.matchResult = "opponent-forfeit";
+			state.score = {
+				opponent: 0,
+				player: 0,
+			};
 		},
 		waitingForTurn: (state, action: PayloadAction<boolean>) => {
 			state.waitingTurn = action.payload;
