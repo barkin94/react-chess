@@ -2,7 +2,7 @@ import { io, Socket } from "socket.io-client";
 
 let socket: Socket;
 export const initSocket = () => {
-	socket = io("localhost:3001");
+	socket = io(process.env.REACT_APP_SOCKET_URL || "localhost:3001");
 	return socket;
 };
 
