@@ -6,7 +6,7 @@ interface RematchRequestSentContentProps {
 }
 export const RematchRequestSentContent: React.FC<RematchRequestSentContentProps> = (props) => {
 	useEffect(() => {
-		getSocket().on("rematch-request-result", (payload: "accepted" | "rejected") => {
+		getSocket().on("rematch-request-result", (payload) => {
 			props.onResponse(payload);
 		});
 

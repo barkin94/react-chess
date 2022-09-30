@@ -1,14 +1,13 @@
-import "./inversify.config";
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.scss";
-import reportWebVitals from "./reportWebVitals";
-import App from "./components/app/app";
 import { Provider } from "react-redux";
+import App from "./components/app/app";
+import "./index.scss";
+import "./inversify.config";
 import { store } from "./redux/store";
+import reportWebVitals from "./reportWebVitals";
 import { initSocket } from "./socket/socket-io";
 import { initServerEventHandlers } from "./socket/socket-io-events";
-import ReactModal from "react-modal";
 
 ReactDOM.render(
 	<React.StrictMode>
@@ -26,6 +25,5 @@ if (process.env.NODE_ENV === "production") {
 	reportWebVitals();
 }
 
-ReactModal.setAppElement(document.getElementById("root")!);
 const socket = initSocket();
 initServerEventHandlers(socket, store);

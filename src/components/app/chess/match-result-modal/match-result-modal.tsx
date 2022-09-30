@@ -11,7 +11,7 @@ import { RematchRequestSentContent } from "./content/rematch-request-sent-conten
 
 type ModalContent = "match-end" | "rematch-request-sent" | "rematch-request-received" | "rematch-rejected";
 
-export const MatchResultMenu: React.FC<{ matchResult: MatchResult }> = (props) => {
+export const MatchResultModal: React.FC<{ matchResult: MatchResult }> = (props) => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [modalContent, setModalContent] = useState<ModalContent>("match-end");
 
@@ -68,29 +68,25 @@ export const MatchResultMenu: React.FC<{ matchResult: MatchResult }> = (props) =
 		dispatch(searchMatch());
 	};
 
-	return (
-		<div>
-			{modalContent === "match-end" && (
-				<MatchEndContent
-					matchResult={props.matchResult}
-					onRequestRematchBtnClick={requestRematch}
-					onSearchMatchBtnClick={searchAnotherMatch}
-					onRematchRequestReceived={() => setModalContent("rematch-request-received")}
-				></MatchEndContent>
-			)}
-			{modalContent === "rematch-request-sent" && (
-				<RematchRequestSentContent onResponse={handleRematchRequestSentResult}></RematchRequestSentContent>
-			)}
-			{modalContent === "rematch-rejected" && (
-				<OpponentRejectedRematchContent
-					onSearchMatchBtnClick={searchAnotherMatch}
-				></OpponentRejectedRematchContent>
-			)}
-			{modalContent === "rematch-request-received" && (
-				<RematchRequestReceivedContent
-					onResponse={handleRematchRequestReceivedResult}
-				></RematchRequestReceivedContent>
-			)}
-		</div>
-	);
+	function getView() {
+		switch (modalContent) {
+			case "match-end":
+				return (
+					<MatchEndContent
+						matchResult={props.matchResult}
+						onRequestRematchBtnClick={requestRematch}
+						onSearchMatchBtnClick={searchAnotherMatch}
+						onRematchRequestReceived={() => setModalContent("rematch-request-received")}
+					/>
+				);
+			case "rematch-request-sent":
+				return <RematchRequestSentContent onResponse={handleRematchRequestSentResult} />;
+			case "rematch-rejected":
+				return <OpponentRejectedRematchContent onSearchMatchBtnClick={searchAnotherMatch} />;
+			case "rematch-request-received":
+				return <RematchRequestReceivedContent onResponse={handleRematchRequestReceivedResult} />;
+		}
+	}
+
+	return getView();
 };

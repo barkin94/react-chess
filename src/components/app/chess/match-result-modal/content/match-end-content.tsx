@@ -10,7 +10,7 @@ interface MatchEndContentProps {
 }
 
 export const MatchEndContent: React.FC<MatchEndContentProps> = (props) => {
-	const opponentForfeit = props.matchResult === "opponent-forfeit";
+	const showRematchButton = props.matchResult !== "opponent-forfeit";
 
 	useEffect(() => {
 		getSocket().on("rematch-request", () => {
@@ -40,7 +40,7 @@ export const MatchEndContent: React.FC<MatchEndContentProps> = (props) => {
 	return (
 		<div>
 			<div>{getMatchResultText()}</div>
-			{!opponentForfeit && <button onClick={props.onRequestRematchBtnClick}>Rematch?</button>}
+			{showRematchButton && <button onClick={props.onRequestRematchBtnClick}>Rematch?</button>}
 			<button onClick={props.onSearchMatchBtnClick}>Search Match</button>
 		</div>
 	);

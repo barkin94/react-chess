@@ -1,9 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import board from "./reducers/board";
-import game from "./reducers/game";
-import { getSocket } from "../socket/socket-io";
 import { Socket } from "socket.io-client";
 import { useCases } from "../domain/domain";
+import { getSocket } from "../socket/socket-io";
+import board from "./reducers/board";
+import game from "./reducers/game";
+import modal from "./reducers/modal";
 
 const extraArgument: AppThunkExtraArgs = {
 	...useCases,
@@ -14,6 +15,7 @@ export const store = configureStore({
 	reducer: {
 		board,
 		game,
+		modal
 	},
 	middleware: (defaultMiddlewares) =>
 		defaultMiddlewares({
