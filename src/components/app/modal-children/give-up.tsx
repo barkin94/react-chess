@@ -1,9 +1,9 @@
 import { useDispatch } from "react-redux";
-import { searchMatch } from "../../../../redux/reducers/game";
-import { closeModal } from "../../../../redux/reducers/modal";
-import { AppDispatch } from "../../../../redux/store";
+import { closeModal } from "../../../redux/reducers/modal";
+import { AppDispatch } from "../../../redux/store";
+import { searchMatch } from "../../../redux/thunks/search-match.thunk";
 
-export const GiveUpModal: React.FC = () => {
+export const GiveUp: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	return (

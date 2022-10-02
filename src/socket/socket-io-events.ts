@@ -1,15 +1,16 @@
 import { EnhancedStore } from "@reduxjs/toolkit";
 import { Socket } from "socket.io-client";
-import { forfeitWinMatch, searchMatch } from "../redux/reducers/game";
+import { openModal } from "../redux/reducers/modal";
 import { moveOpponentsPieceToTargetSquare } from "../redux/thunks/move-opponents-piece-to-target-square.thunk";
+import { searchMatch } from "../redux/thunks/search-match.thunk";
 
 export const initServerEventHandlers = (socket: Socket, store: EnhancedStore) => {
 	socket.on("connect", () => {
-		store.dispatch(searchMatch());
+		store.dispatch(searchMatch() as any);
 	});
 
 	socket.on("forfeit-win", (args) => {
-		store.dispatch(forfeitWinMatch());
+		store.dispatch(openModal({ componentName: "OpponentLeftMatch"}));
 	});
 
 	socket.on("move", (args) => {

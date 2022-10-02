@@ -8,7 +8,7 @@ const initialState: GameState = {
 	waitingTurn: false,
 	yourCapturedPieces: [],
 	opponentsCapturedPieces: [],
-	activePage: { page: "connecting" },
+	activePage: { name: "connecting" },
 	score: {
 		player: 0,
 		opponent: 0,
@@ -19,20 +19,14 @@ const gameSlice = createSlice({
 	name: "game",
 	initialState,
 	reducers: {
-		searchMatch: (state) => {
-			delete state.matchResult;
+		resetScore: (state) => {
 			state.score = {
 				opponent: 0,
 				player: 0,
 			};
-			state.activePage = { page: "searching-match" };
 		},
-		forfeitWinMatch: (state) => {
-			state.matchResult = "opponent-forfeit";
-			state.score = {
-				opponent: 0,
-				player: 0,
-			};
+		setActivePage: (state, action: PayloadAction<ActivePage>) => {
+			state.activePage = action.payload
 		},
 		waitingForTurn: (state, action: PayloadAction<boolean>) => {
 			state.waitingTurn = action.payload;
@@ -70,7 +64,7 @@ const gameSlice = createSlice({
 
 		builder.addCase(initMatch.fulfilled, (state, action) => {
 			delete state.matchResult;
-			state.activePage = { page: "in-match", matchStartingData: action.payload };
+			state.activePage = { name: "match", matchStartingData: action.payload };
 			state.waitingTurn = action.payload.playerColor === "black";
 			state.yourCapturedPieces = [];
 			state.opponentsCapturedPieces = [];
@@ -79,17 +73,17 @@ const gameSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { forfeitWinMatch, waitingForTurn, searchMatch /* rematch */ } = gameSlice.actions;
+export const { waitingForTurn, resetScore, setActivePage } = gameSlice.actions;
 
 export default gameSlice.reducer;
 
-export type MatchResult = "win" | "loss" | "draw" | "opponent-forfeit";
+export type MatchResult = "win" | "loss" | "draw";
 
 type ActivePage =
-	| { page: "enter-name" } // to be implemented
-	| { page: "connecting" }
-	| { page: "searching-match" }
-	| { page: "in-match"; matchStartingData: StartingData };
+	| { name: "enter-name" } // to be implemented
+	| { name: "connecting" }
+	| { name: "searching-match" }
+	| { name: "match"; matchStartingData: StartingData };
 
 type GameState = {
 	waitingTurn: boolean;

@@ -1,13 +1,13 @@
-import styles from "./board.module.scss";
-import { Square } from "./square/square";
+import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
-import React from "react";
+import styles from "./board.module.scss";
+import { Square } from "./square/square";
 
 export const Board: React.FC = () => {
 	const highlightedSquares = useSelector((state: RootState) => state.board.highlightedSquares);
 	const squareData = useSelector((state: RootState) => {
-		if (state.game.activePage.page !== "in-match") {
+		if (state.game.activePage.name !== "match") {
 			throw new Error('active page needs to be "in match"');
 		}
 

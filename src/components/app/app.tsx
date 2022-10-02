@@ -2,26 +2,22 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { Chess } from "./chess/chess";
-import { GiveUpModal } from "./chess/give-up-modal/give-up-modal";
-import { MatchResultModal } from "./chess/match-result-modal/match-result-modal";
+import { modalComponents } from './modal-children';
 import { ModalContainer } from "./modal-container/modal-container";
 import { SearchingMatch } from "./searching-match/searching-match";
 
 export const App: React.FC = () => {
-	const activePage = useSelector((state: RootState) => state.game.activePage.page);
+	const activePage = useSelector((state: RootState) => state.game.activePage);
 
-	const childComponentsForModal = [
-		GiveUpModal,
-		MatchResultModal
-	] 
+	const childComponentsForModal = modalComponents;
 
 	const getView = () => {
-		switch (activePage) {
+		switch (activePage.name) {
 			case "connecting":
 				return null;
 			case "searching-match":
 				return <SearchingMatch />;
-			case "in-match":
+			case "match":
 				return (
 					<>
 						<Chess />

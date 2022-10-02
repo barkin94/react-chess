@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { MoveResult, PieceLocations } from "../reducers/board";
 import { AppThunkExtraArgs } from "../store";
+import { showMatchEndModal } from "./show-match-end-modal.thunk";
 
 export type ArgType = {
 	pieceId: string;
@@ -8,14 +9,17 @@ export type ArgType = {
 };
 export const moveOpponentsPieceToTargetSquare = createAsyncThunk<MoveResult, ArgType, { extra: AppThunkExtraArgs }>(
 	"moveOpponentPiece",
-	(args: ArgType, options) => {
-		const { capturedPiece, pieceLocations, matchResult } = options.extra.movePiece.execute({
+	(args: ArgType, { extra, dispatch }) => {
+		const { capturedPiece, pieceLocations, matchResult } = extra.movePiece.execute({
 			pieceId: args.pieceId,
 			targetSquareId: args.targetSquareId,
 		});
 
 		const pieceLocationsForReducer: PieceLocations = {};
 		pieceLocations.forEach((piece, square) => (pieceLocationsForReducer[square.id] = piece.id));
+
+		if (matchResult)
+			dispatch(showMatchEndModal());
 
 		return {
 			capturedPieceId: capturedPiece?.id,

@@ -1,13 +1,13 @@
-import styles from "./square.module.scss";
 import React, { useLayoutEffect, useRef } from "react";
-import { Piece } from "../../../../shared/piece/piece";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../../../redux/store";
-import { extractPiecePropsFromId } from "../../../../shared/piece/piece-helper";
-import { toggleOffAvailableMoves } from "../../../../../redux/reducers/board";
-import { moveSelectedPieceToTargetSquare } from "../../../../../redux/thunks/move-selected-piece-to-target-square.thunk";
 import { SquareColor } from "../../../../../domain/shared/types/square-color.type";
+import { toggleOffAvailableMoves } from "../../../../../redux/reducers/board";
+import { AppDispatch, RootState } from "../../../../../redux/store";
+import { moveSelectedPieceToTargetSquare } from "../../../../../redux/thunks/move-selected-piece-to-target-square.thunk";
 import { toggleOnAvailableMoves } from "../../../../../redux/thunks/toggle-on-available-moves.thunk";
+import { Piece } from "../../../../shared/piece/piece";
+import { extractPiecePropsFromId } from "../../../../shared/piece/piece-helper";
+import styles from "./square.module.scss";
 
 export interface SquareProps {
 	id: string;
@@ -22,7 +22,7 @@ export const Square: React.FC<SquareProps> = (props) => {
 	const pieceId = useSelector((state: RootState) => state.board.pieceLocations[props.id]);
 	const pieceProps = pieceId ? extractPiecePropsFromId(pieceId) : null;
 	const playerColor = useSelector((state: RootState) => {
-		if (state.game.activePage.page !== "in-match") {
+		if (state.game.activePage.name !== "match") {
 			throw new Error('active page needs to be "in-match"');
 		}
 
