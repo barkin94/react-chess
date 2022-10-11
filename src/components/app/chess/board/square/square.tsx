@@ -59,6 +59,7 @@ export const Square: React.FC<SquareProps> = (props) => {
 
 	return (
 		<span className={getClassName()} ref={squareElemRef}>
+			<div className={styles["square-name"]}>{props.id}</div>
 			{pieceProps && (
 				<Piece
 					id={pieceProps.id}
