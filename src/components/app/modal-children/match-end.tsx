@@ -3,25 +3,17 @@ import { AppDispatch, RootState } from "../../../redux/store";
 import { requestRematch } from "../../../redux/thunks/request-rematch.thunk";
 import { searchMatch } from "../../../redux/thunks/search-match.thunk";
 
-export const MatchEnd: React.FC = () => {
+export const MatchEnd: React.FC<{ winner?: string }> = (props) => {
 	const dispatch = useDispatch<AppDispatch>();
-	const matchResult = useSelector((state: RootState) => state.game.matchResult);
+	const playerColor = useSelector((state: RootState) => state.game.playerColor);
 	
-	if (!matchResult) {
-		throw new Error("match is not over yet")
-	}
-
 	const getMatchResultText = () => {
-		switch (matchResult) {
-			case "win":
-				return "You win!";
-			case "loss":
-				return "You lose!";
-			case "draw":
-				return "Draw!";
-			default:
-				return "Invalid match result";
-		}
+		if (!props.winner)
+			return "Draw!";
+		else if (props.winner === playerColor)
+			return "You win!";
+		else
+			return "You lose!";
 	};
 
 	return (

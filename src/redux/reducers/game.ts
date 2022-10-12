@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PieceColor } from "../../domain/shared/types/piece-color.type";
 import { initMatch } from "../thunks/init-match.thunk";
 import { moveOpponentsPieceToTargetSquare } from "../thunks/move-opponents-piece-to-target-square.thunk";
 import { moveSelectedPieceToTargetSquare } from "../thunks/move-selected-piece-to-target-square.thunk";
@@ -35,37 +36,42 @@ const gameSlice = createSlice({
 	extraReducers: (builder) => {
 		builder.addCase(moveSelectedPieceToTargetSquare.fulfilled, (state, action) => {
 			state.waitingTurn = true;
-			state.matchResult = action.payload.matchResult;
-			if (action.payload.capturedPieceId) {
-				state.opponentsCapturedPieces.push(action.payload.capturedPieceId);
-			}
 
-			if (state.matchResult === "win") {
-				state.score.player++;
-			} else if (state.matchResult === "loss") {
-				state.score.opponent++;
-			}
+			action.payload.events.forEach(event => {
+				switch (event.type) {
+					case "capture":
+						state.opponentsCapturedPieces.push(event.capturedPieceId);
+						break;
+					case "match-end":
+						event.winner === state.playerColor
+							? state.score.player++
+							: state.score.opponent++;
+						break;
+				}
+			});
 		});
 
 		builder.addCase(moveOpponentsPieceToTargetSquare.fulfilled, (state, action) => {
 			state.waitingTurn = false;
-			state.matchResult = action.payload.matchResult;
 
-			if (action.payload.capturedPieceId) {
-				state.yourCapturedPieces.push(action.payload.capturedPieceId);
-			}
-
-			if (state.matchResult === "win") {
-				state.score.player++;
-			} else if (state.matchResult === "loss") {
-				state.score.opponent++;
-			}
+			action.payload.events.forEach(event => {
+				switch (event.type) {
+					case "capture":
+						state.opponentsCapturedPieces.push(event.capturedPieceId);
+						break;
+					case "match-end":
+						event.winner === state.playerColor
+							? state.score.player++
+							: state.score.opponent++;
+						break;
+				}
+			});
 		});
 
 		builder.addCase(initMatch.fulfilled, (state, action) => {
-			delete state.matchResult;
 			state.activePage = { name: "match", matchStartingData: action.payload };
-			state.waitingTurn = action.payload.playerColor === "black";
+			state.playerColor = action.payload.playerColor
+			state.waitingTurn = state.playerColor === "black";
 			state.yourCapturedPieces = [];
 			state.opponentsCapturedPieces = [];
 		});
@@ -89,7 +95,7 @@ type GameState = {
 	waitingTurn: boolean;
 	yourCapturedPieces: string[];
 	opponentsCapturedPieces: string[];
-	matchResult?: MatchResult;
+	playerColor?: PieceColor;
 	activePage: ActivePage;
 	score: {
 		opponent: number;

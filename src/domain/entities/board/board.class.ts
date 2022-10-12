@@ -1,10 +1,10 @@
-import { Piece } from "../piece/piece.class";
 import { inject, injectable } from "inversify";
 import { DataStore } from "../../data-store";
-import { Square } from "./square.class";
 import { PieceColor } from "../../shared/types/piece-color.type";
-import { MoveCalculator } from "../piece/move-calculation/move-calculator.class";
 import { Side } from "../../shared/types/side.type";
+import { MoveCalculator } from "../piece/move-calculation/move-calculator.class";
+import { Piece } from "../piece/piece.class";
+import { Square } from "./square.class";
 
 @injectable()
 export class Board {
@@ -28,41 +28,51 @@ export class Board {
 		return this._moveCalculator.getPossibleMoves(piece);
 	}
 
-	movePiece(pieceId: string, targetSquareId: string): MoveResult {
-		if (!this.canPieceMakeMove(pieceId, targetSquareId)) {
+	movePiece(pieceId: string, targetSquareId: string): ChessEvent[] {
+		let events: ChessEvent[] = [];
+
+		if (!this.canPieceMakeMove(pieceId, targetSquareId))
 			throw new Error("piece cannot make that move");
-		}
 
 		const piece = this._dataStore.getPieceById(pieceId);
-		if (!piece.squareId) throw new Error("piece is not on the board");
+		if (!piece.squareId)
+			throw new Error("piece is not on the board");
 
 		const targetSquare = this._dataStore.getSquareById(targetSquareId);
 
 		const opponentPieceOnTargetSquare = this._dataStore.getPieceOnSquare(targetSquare);
-		if (opponentPieceOnTargetSquare) this._dataStore.emptySquare(targetSquare);
+		if (opponentPieceOnTargetSquare) {
+			this._dataStore.emptySquare(targetSquare);
+			events.push({ type: "capture", capturedPieceId: opponentPieceOnTargetSquare.id });
+		}
 
 		const currentSquare = this._dataStore.getSquareById(piece.squareId);
 		this._dataStore.emptySquare(currentSquare);
-
 		this._dataStore.insertPieceOnSquare(piece, targetSquare);
+		events.push({ type: "move", pieceId: piece.id, targetSquareId: targetSquare.id });
 
-		const moveResult: MoveResult = {
-			capturedPiece: opponentPieceOnTargetSquare,
-			pieceLocations: this.getPieceLocations(),
-		};
+		var piecethatCheckedPlayerKing = this.isChecked("player");
+		if (piecethatCheckedPlayerKing)
+			events.push({ type: "check", attackerId: piecethatCheckedPlayerKing.id });
+
+		var piecethatCheckedOpponentKing = this.isChecked("opponent");
+		if (piecethatCheckedOpponentKing)
+			events.push({ type: "check", attackerId: piecethatCheckedOpponentKing.id });
 
 		const isPlayerCheckMated = this.isCheckmated("player");
 		const isOpponentCheckMated = this.isCheckmated("opponent");
 
-		if (isPlayerCheckMated && isOpponentCheckMated) {
-			moveResult.matchResult = "draw";
-		} else if (isPlayerCheckMated) {
-			moveResult.matchResult = "loss";
-		} else if (isOpponentCheckMated) {
-			moveResult.matchResult = "win";
-		}
+		if (isPlayerCheckMated || isOpponentCheckMated) 
+			events = events.filter(e => e.type !== "check");
 
-		return moveResult;
+		if (isPlayerCheckMated && isOpponentCheckMated)
+			events.push({ type: "match-end" });
+		else if (isPlayerCheckMated)
+			events.push({ type: "match-end", winner: this._dataStore.getColor("opponent") });
+		else if (isOpponentCheckMated)
+			events.push({ type: "match-end", winner: this._dataStore.getColor("player") });
+
+		return events;
 	}
 
 	private canPieceMakeMove(pieceId: string, targetSquareId: string) {
@@ -77,40 +87,73 @@ export class Board {
 		return canMoveToLocation;
 	}
 
-	private isCheckmated(side: Side) {
+	/**
+	 * Checks if a side is checked.
+	 * @param side
+S	 * @returns The piece that initiated a check if there is any
+	 */
+	private isChecked(side: Side): Piece | null {
 		const sideColor = this._dataStore.getColor(side);
-		const checkmateSquares = this.getCheckmateSquaresOfSide(sideColor);
-		const checkmateSquaresTargetedByOpponent: Square[] = [];
+		const king = this.getKingOfColor(sideColor);
+		const squareKingIsOn = this.getTheSquarePieceIsOn(king);
 
 		const otherSideColor: PieceColor = sideColor === "black" ? "white" : "black";
+
 		for (let pieceOfOtherSide of this.getPiecesCurrentlyOnBoard(otherSideColor)) {
-			const targetedCheckmateSquares = this.getPossibleMoves(pieceOfOtherSide).filter((square) =>
-				checkmateSquares.some((c) => square.id === c.id)
-			);
+			const otherKingSquare = this.getPossibleMoves(pieceOfOtherSide)
+				.filter(square => {
+					return square.id === squareKingIsOn.id
+				});
 
-			checkmateSquaresTargetedByOpponent.push(...targetedCheckmateSquares);
+			if (otherKingSquare) return pieceOfOtherSide;
+		}
 
-			if (checkmateSquares.length <= checkmateSquaresTargetedByOpponent.length) return true;
+		return null;
+	}
+
+	private isCheckmated(side: Side) {
+		const sideColor = this._dataStore.getColor(side);
+		const targetKing = this.getKingOfColor(sideColor);
+		const possibleMovesOfKing = this.getPossibleMoves(targetKing);
+		const blockedEscapeSquareIdsOfKing = new Set<string>();
+		const otherSideColor: PieceColor = sideColor === "black" ? "white" : "black";
+		let isKingThreatened = false;
+		
+		for (let pieceOfOtherSide of this.getPiecesCurrentlyOnBoard(otherSideColor)) {
+			const pieceMoves = this.getPossibleMoves(pieceOfOtherSide);
+			
+			if (!isKingThreatened)
+				isKingThreatened = !!pieceMoves.find((square) => square.id === targetKing.squareId);
+			
+			pieceMoves
+				.filter((square) => possibleMovesOfKing.some((c) => square.id === c.id))
+				.map((square) => square.id)
+				.forEach((id) => {
+					blockedEscapeSquareIdsOfKing.add(id);
+				});
+
+			if (isKingThreatened && possibleMovesOfKing.length <= blockedEscapeSquareIdsOfKing.size) return true;
 		}
 
 		return false;
 	}
 
-	private getCheckmateSquaresOfSide(color: PieceColor) {
+	private getTheSquarePieceIsOn(piece: Piece) {
+		if (!piece.squareId) {
+			throw new Error("piece is not on board");
+		}
+
+		return this._dataStore.getSquareById(piece.squareId);
+	}
+
+	private getKingOfColor(color: PieceColor) {
 		const king = this.getPiecesCurrentlyOnBoard(color).find((piece) => piece.type === "king");
 
 		if (!king) {
 			throw new Error("king not found");
 		}
 
-		if (!king.squareId) {
-			throw new Error("king is not on board");
-		}
-
-		const currentLocationOfKing = this._dataStore.getSquareById(king.squareId);
-		const possibleMovesOfKing = this._moveCalculator.getPossibleMoves(king);
-
-		return [currentLocationOfKing, ...possibleMovesOfKing];
+		return king;
 	}
 
 	private getPiecesCurrentlyOnBoard(color?: PieceColor) {
@@ -125,8 +168,14 @@ export class Board {
 }
 
 export type PieceLocations = Map<Square, Piece>;
+
 export type MoveResult = {
-	capturedPiece: Piece | undefined;
 	pieceLocations: PieceLocations;
-	matchResult?: "win" | "loss" | "draw";
+	events: ChessEvent[];
 };
+
+export type ChessEvent =
+	| { type: "move"; pieceId: string; targetSquareId: string }
+	| { type: "capture"; capturedPieceId: string; }
+	| { type: "match-end"; winner?: PieceColor; }
+	| { type: "check"; attackerId: string; };

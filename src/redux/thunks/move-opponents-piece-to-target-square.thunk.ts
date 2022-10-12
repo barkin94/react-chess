@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { MoveResult, PieceLocations } from "../reducers/board";
+import { getPieceLocationsForReducer } from "../helper-fns";
+import { MoveResultForReducoer } from "../reducers/board";
 import { AppThunkExtraArgs } from "../store";
 import { showMatchEndModal } from "./show-match-end-modal.thunk";
 
@@ -7,24 +8,22 @@ export type ArgType = {
 	pieceId: string;
 	targetSquareId: string;
 };
-export const moveOpponentsPieceToTargetSquare = createAsyncThunk<MoveResult, ArgType, { extra: AppThunkExtraArgs }>(
+
+export const moveOpponentsPieceToTargetSquare = createAsyncThunk<MoveResultForReducoer, ArgType, { extra: AppThunkExtraArgs }>(
 	"moveOpponentPiece",
 	(args: ArgType, { extra, dispatch }) => {
-		const { capturedPiece, pieceLocations, matchResult } = extra.movePiece.execute({
+		const { pieceLocations, events } = extra.movePiece.execute({
 			pieceId: args.pieceId,
 			targetSquareId: args.targetSquareId,
 		});
 
-		const pieceLocationsForReducer: PieceLocations = {};
-		pieceLocations.forEach((piece, square) => (pieceLocationsForReducer[square.id] = piece.id));
-
-		if (matchResult)
-			dispatch(showMatchEndModal());
+		events.forEach(event =>
+			event.type === "match-end" && dispatch(showMatchEndModal(event.winner))
+		);
 
 		return {
-			capturedPieceId: capturedPiece?.id,
-			pieceLocations: pieceLocationsForReducer,
-			matchResult,
+			pieceLocations: getPieceLocationsForReducer(pieceLocations),
+			events,
 		};
 	}
 );

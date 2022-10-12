@@ -10,6 +10,9 @@ export class MovePiece implements UseCase<MovePieceInput, MoveResult> {
 	private board!: Board;
 
 	execute(input: MovePieceInput): MoveResult {
-		return this.board.movePiece(input.pieceId, input.targetSquareId);
+		return {
+			events: this.board.movePiece(input.pieceId, input.targetSquareId),
+			pieceLocations: this.board.getPieceLocations()
+		};
 	}
 }

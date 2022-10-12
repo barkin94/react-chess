@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { ChessEvent } from "../../domain/entities/board/board.class";
 import { PieceColor } from "../../domain/shared/types/piece-color.type";
 import { SquareColor } from "../../domain/shared/types/square-color.type";
 import { initMatch } from "../thunks/init-match.thunk";
@@ -53,16 +54,15 @@ export default board.reducer;
 
 export type StartingData = {
 	squareData: { id: string; color: SquareColor }[][];
-	pieceLocations: PieceLocations;
+	pieceLocations: PieceLocationsForReducer;
 	playerColor: PieceColor;
 };
 
-export type PieceLocations = { [squareId: string]: string };
+export type PieceLocationsForReducer = { [squareId: string]: string };
 
-export type MoveResult = {
-	pieceLocations: PieceLocations;
-	capturedPieceId?: string;
-	matchResult?: "win" | "loss" | "draw";
+export type MoveResultForReducoer = {
+	pieceLocations: PieceLocationsForReducer;
+	events: ChessEvent[];
 };
 
 type BoardState = {
