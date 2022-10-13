@@ -1,5 +1,4 @@
-import { Coordinates } from "../../shared/types/coordinates.type";
-import { SquareColor } from "../../shared/types/square-color.type";
+import { Coordinates, SquareColor } from "../../shared";
 
 export class Square {
 	private _color: SquareColor;

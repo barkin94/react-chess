@@ -1,7 +1,6 @@
 import { inject, injectable } from "inversify";
 import { DataStore } from "../../../data-store";
-import { Coordinates } from "../../../shared/types/coordinates.type";
-import { Side } from "../../../shared/types/side.type";
+import { Coordinates, Side } from "../../../shared";
 import { Square } from "../../board/square.class";
 
 @injectable()

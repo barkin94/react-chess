@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { Side } from "../../../shared/types/side.type";
+import { Side } from "../../../shared";
 import { Square } from "../../board/square.class";
 import { Piece } from "../piece.class";
 import { BoardNavigator, Direction } from "./board-navigator.class";

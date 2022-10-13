@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { PieceColor } from "../../domain/shared/types/piece-color.type";
+import { PieceColor } from "../../domain/shared";
 import { initMatch } from "../thunks/init-match.thunk";
 import { moveOpponentsPieceToTargetSquare } from "../thunks/move-opponents-piece-to-target-square.thunk";
 import { moveSelectedPieceToTargetSquare } from "../thunks/move-selected-piece-to-target-square.thunk";

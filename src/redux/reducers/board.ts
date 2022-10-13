@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { ChessEvent } from "../../domain/entities/board/board.class";
-import { PieceColor } from "../../domain/shared/types/piece-color.type";
-import { SquareColor } from "../../domain/shared/types/square-color.type";
+import { PieceColor, SquareColor } from "../../domain/shared";
 import { initMatch } from "../thunks/init-match.thunk";
 import { moveOpponentsPieceToTargetSquare } from "../thunks/move-opponents-piece-to-target-square.thunk";
 import { moveSelectedPieceToTargetSquare } from "../thunks/move-selected-piece-to-target-square.thunk";

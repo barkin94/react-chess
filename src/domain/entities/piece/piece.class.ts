@@ -1,5 +1,4 @@
-import { PieceColor } from "../../shared/types/piece-color.type";
-import { PieceType } from "../../shared/types/piece-type.type";
+import { PieceColor, PieceType } from "../../shared";
 
 export class Piece {
 	squareId?: string;

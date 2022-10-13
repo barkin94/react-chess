@@ -1,7 +1,6 @@
 import { inject, injectable } from "inversify";
 import { DataStore } from "../../data-store";
-import { PieceColor } from "../../shared/types/piece-color.type";
-import { Side } from "../../shared/types/side.type";
+import { PieceColor, Side } from "../../shared";
 import { MoveCalculator } from "../piece/move-calculation/move-calculator.class";
 import { Piece } from "../piece/piece.class";
 import { Square } from "./square.class";

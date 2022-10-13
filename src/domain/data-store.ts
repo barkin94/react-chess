@@ -1,9 +1,7 @@
 import { injectable } from "inversify";
 import { Square } from "./entities/board/square.class";
 import { Piece } from "./entities/piece/piece.class";
-import { Coordinates } from "./shared/types/coordinates.type";
-import { PieceColor } from "./shared/types/piece-color.type";
-import { Side } from "./shared/types/side.type";
+import { Coordinates, PieceColor, Side } from "./shared";
 
 @injectable()
 export class DataStore {

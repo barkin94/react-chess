@@ -1,5 +1,4 @@
-import { PieceColor } from "../../../domain/shared/types/piece-color.type";
-import { PieceType } from "../../../domain/shared/types/piece-type.type";
+import { PieceColor, PieceType } from "../../../domain/shared";
 import styles from "./piece.module.scss";
 
 export interface PieceProps {

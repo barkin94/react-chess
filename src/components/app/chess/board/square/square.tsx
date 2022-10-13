@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { SquareColor } from "../../../../../domain/shared/types/square-color.type";
+import { SquareColor } from "../../../../../domain/shared";
 import { toggleOffAvailableMoves } from "../../../../../redux/reducers/board";
 import { AppDispatch, RootState } from "../../../../../redux/store";
 import { moveSelectedPieceToTargetSquare } from "../../../../../redux/thunks/move-selected-piece-to-target-square.thunk";

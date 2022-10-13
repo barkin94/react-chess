@@ -1,9 +1,9 @@
 import { inject, injectable } from "inversify";
-import { BoardNavigator, Direction } from "./board-navigator.class";
+import { Side } from "../../../shared";
 import { Square } from "../../board/square.class";
-import { MoveCalculationStrategy } from "./move-calculation-strategy.abstract";
 import { Piece } from "../piece.class";
-import { Side } from "../../../shared/types/side.type";
+import { BoardNavigator, Direction } from "./board-navigator.class";
+import { MoveCalculationStrategy } from "./move-calculation-strategy.abstract";
 
 @injectable()
 export class BishopMoveCalculationStrategy extends MoveCalculationStrategy {

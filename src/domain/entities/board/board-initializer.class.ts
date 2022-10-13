@@ -1,7 +1,5 @@
 import { injectable } from "inversify";
-import { Coordinates } from "../../shared/types/coordinates.type";
-import { PieceColor, pieceColors } from "../../shared/types/piece-color.type";
-import { PieceType, pieceTypes } from "../../shared/types/piece-type.type";
+import { Coordinates, PieceColor, PieceType, PIECE_COLOR, PIECE_TYPES } from "../../shared";
 import { Piece } from "../piece/piece.class";
 import { Square } from "./square.class";
 
@@ -18,8 +16,8 @@ export class BoardInitializer {
 			black: new Map<Piece, Coordinates>(),
 		};
 
-		pieceColors.forEach((color) => {
-			pieceTypes.forEach((type) => {
+		PIECE_COLOR.forEach((color) => {
+			PIECE_TYPES.forEach((type) => {
 				const startingLocations = this.getStartingPositions(
 					type,
 					playerColor === color ? "bottom" : "top",

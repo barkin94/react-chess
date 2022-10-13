@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { PieceColor } from "../../domain/shared/types/piece-color.type";
+import { PieceColor } from "../../domain/shared";
 import { openModal } from "../reducers/modal";
 import { AppThunkExtraArgs } from "../store";
 

@@ -1,10 +1,10 @@
-import { BoardInitializer } from "../entities/board/board-initializer.class";
-import { PieceColor } from "../shared/types/piece-color.type";
-import { DataStore } from "../data-store";
 import { inject, injectable } from "inversify";
-import { UseCase } from "./use-case.interface";
-import { Square } from "../entities/board/square.class";
+import { DataStore } from "../data-store";
+import { BoardInitializer } from "../entities/board/board-initializer.class";
 import { PieceLocations } from "../entities/board/board.class";
+import { Square } from "../entities/board/square.class";
+import { PieceColor } from "../shared";
+import { UseCase } from "./use-case.interface";
 
 @injectable()
 export class InitMatch implements UseCase<PieceColor, MatchInitialData> {
