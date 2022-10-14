@@ -1,18 +1,22 @@
 import { inject, injectable } from "inversify";
-import { BoardNavigator } from "./board-navigator.class";
+import { Direction } from "../../../shared";
 import { Square } from "../../board/square.class";
-import { MoveCalculationStrategy } from "./move-calculation-strategy.abstract";
 import { Piece } from "../piece.class";
+import { BoardNavigator } from "./board-navigator.class";
+import { MoveCalculationStrategy } from "./move-calculation-strategy.abstract";
 
 @injectable()
 export class PawnMoveCalculationStrategy extends MoveCalculationStrategy {
 	@inject(BoardNavigator)
 	private _boardNavigator!: BoardNavigator;
 
-	getPossibleMoves(piece: Piece): Square[] {
-		if (!piece.squareId) return [];
+	getPossibleMoves(piece: Piece): Map<Direction, Square[]> {
+		if (!piece.squareId) return new Map();
 
-		const possibleMoves: Square[] = [];
+		const possibleMoves = new Map<Direction, Square[]>();
+		possibleMoves.set('top', []);
+		possibleMoves.set('top_left', []);
+		possibleMoves.set('top_right', []);
 
 		const pieceOwner = piece.color === this._dataStore.getColor("player") ? "player" : "opponent";
 		const squarePieceIsOn = this._dataStore.getSquareById(piece.squareId);
@@ -20,14 +24,14 @@ export class PawnMoveCalculationStrategy extends MoveCalculationStrategy {
 		// Check if pawn can move forward
 		const squareInTop = this._boardNavigator.getFirstSquareInDirection(squarePieceIsOn, "top", pieceOwner);
 		if (squareInTop && !this._dataStore.getPieceOnSquare(squareInTop)) {
-			possibleMoves.push(squareInTop);
+			possibleMoves.get("top")!.push(squareInTop);
 		}
 
 		// Pawn can move 2 squares forward during its first move. Check if it can move forward 2nd time
 		if (squareInTop && this.isPawnOnStartingLocation(piece)) {
 			const squareIn2ndTop = this._boardNavigator.getFirstSquareInDirection(squareInTop, "top", pieceOwner);
 			if (squareIn2ndTop && !this._dataStore.getPieceOnSquare(squareIn2ndTop)) {
-				possibleMoves.push(squareIn2ndTop);
+				possibleMoves.get("top")!.push(squareIn2ndTop);
 			}
 		}
 
@@ -37,7 +41,7 @@ export class PawnMoveCalculationStrategy extends MoveCalculationStrategy {
 		if (squareInTopLeft) {
 			const targetPiece = this._dataStore.getPieceOnSquare(squareInTopLeft);
 			if (targetPiece && targetPiece.color !== this._dataStore.getColor(pieceOwner)) {
-				possibleMoves.push(squareInTopLeft);
+				possibleMoves.get("top_left")!.push(squareInTopLeft);
 			}
 		}
 
@@ -49,10 +53,16 @@ export class PawnMoveCalculationStrategy extends MoveCalculationStrategy {
 		if (squareInTopRight) {
 			const targetPiece = this._dataStore.getPieceOnSquare(squareInTopRight);
 			if (targetPiece && targetPiece.color !== this._dataStore.getColor(pieceOwner)) {
-				possibleMoves.push(squareInTopRight);
+				possibleMoves.get("top_right")!.push(squareInTopRight);
 			}
 		}
 		//----------------------------------------------------------------------------------------------------------
+		
+		Array.from(possibleMoves.keys()).forEach(direction => {
+			if(!possibleMoves.get(direction)!.length)
+				possibleMoves.delete(direction);
+		})
+		
 		return possibleMoves;
 	}
 

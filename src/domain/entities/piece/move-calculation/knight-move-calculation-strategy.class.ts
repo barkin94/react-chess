@@ -1,12 +1,13 @@
 import { injectable } from "inversify";
+import { Direction } from "../../../shared";
 import { Square } from "../../board/square.class";
-import { MoveCalculationStrategy } from "./move-calculation-strategy.abstract";
 import { Piece } from "../piece.class";
+import { MoveCalculationStrategy } from "./move-calculation-strategy.abstract";
 
 @injectable()
 export class KnightMoveCalculationStrategy extends MoveCalculationStrategy {
-	getPossibleMoves(piece: Piece): Square[] {
-		if (!piece.squareId) return [];
+	getPossibleMoves(piece: Piece): Map<Direction, Square[]> {
+		if (!piece.squareId) return new Map();
 
 		const offsets = [
 			[1, 2],
@@ -21,7 +22,11 @@ export class KnightMoveCalculationStrategy extends MoveCalculationStrategy {
 
 		const currentCoordinates = this._dataStore.getSquareById(piece.squareId).coordinates;
 		const squareLayout = this._dataStore.getSquareLayout();
-		return offsets
+
+		const possibleMoves = new Map<Direction, Square[]>();
+		possibleMoves.set("knight_specific", []);
+
+		offsets
 			.filter((offset) => {
 				const targetXCoord = currentCoordinates.x + offset[0];
 				const targetYCoord = currentCoordinates.y + offset[1];
@@ -36,6 +41,11 @@ export class KnightMoveCalculationStrategy extends MoveCalculationStrategy {
 				} else {
 					return true;
 				}
-			});
+			}).forEach(square => possibleMoves.get("knight_specific")!.push(square))
+
+		if(!possibleMoves.get("knight_specific")!.length)
+			possibleMoves.delete("knight_specific");
+
+		return possibleMoves;
 	}
 }

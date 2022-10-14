@@ -1,12 +1,12 @@
 import { inject, injectable } from "inversify";
 import { DataStore } from "../../../data-store";
-import { PieceColor } from "../../../shared";
+import { Direction, PieceColor } from "../../../shared";
 import { Square } from "../../board/square.class";
 import { Piece } from "../piece.class";
 
 @injectable()
 export abstract class MoveCalculationStrategy {
-	abstract getPossibleMoves(piece: Piece): Square[];
+	abstract getPossibleMoves(piece: Piece): Map<Direction, Square[]>;
 
 	@inject(DataStore)
 	protected _dataStore!: DataStore;

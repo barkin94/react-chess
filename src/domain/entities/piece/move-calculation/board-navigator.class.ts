@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify";
 import { DataStore } from "../../../data-store";
-import { Coordinates, Side } from "../../../shared";
+import { Coordinates, Direction, NonKnightDirection, Side } from "../../../shared";
 import { Square } from "../../board/square.class";
 
 @injectable()
 export class BoardNavigator {
 	@inject(DataStore) private _dataStore!: DataStore;
 
-	private _directionOffsetCoordinates: Record<Direction, Coordinates> = {
+	private _directionOffsetCoordinates: Record<Exclude<Direction, "knight_specific">, Coordinates> = {
 		top: { x: 0, y: -1 },
 		top_right: { x: 1, y: -1 },
 		right: { x: 1, y: 0 },
@@ -18,7 +18,7 @@ export class BoardNavigator {
 		top_left: { x: -1, y: -1 },
 	};
 
-	getFirstSquareInDirection(source: Square, direction: Direction, relativeTo: Side): Square | null {
+	getFirstSquareInDirection(source: Square, direction: NonKnightDirection, relativeTo: Side): Square | null {
 		let nextYCoordinate =
 			source.coordinates.y + this._directionOffsetCoordinates[direction].y * (relativeTo === "player" ? 1 : -1);
 		let nextXCoordinate = source.coordinates.x + this._directionOffsetCoordinates[direction].x;
@@ -30,7 +30,7 @@ export class BoardNavigator {
 		}
 	}
 
-	getAllSquaresInDirection(source: Square, direction: Direction, relativeTo: Side): Square[] {
+	getAllSquaresInDirection(source: Square, direction: Exclude<Direction, "knight_specific">, relativeTo: Side): Square[] {
 		let nextYCoordinate =
 			source.coordinates.y + this._directionOffsetCoordinates[direction].y * (relativeTo === "player" ? 1 : -1);
 		let nextXCoordinate = source.coordinates.x + this._directionOffsetCoordinates[direction].x;
@@ -52,4 +52,3 @@ export class BoardNavigator {
 	}
 }
 
-export type Direction = "top" | "top_right" | "right" | "bottom_right" | "bottom" | "bottom_left" | "left" | "top_left";

@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { DataStore } from "../../data-store";
-import { PieceColor, Side } from "../../shared";
+import { Direction, PieceColor, Side } from "../../shared";
 import { MoveCalculator } from "../piece/move-calculation/move-calculator.class";
 import { Piece } from "../piece/piece.class";
 import { Square } from "./square.class";
@@ -17,14 +17,14 @@ export class Board {
 		return this._dataStore.getPieceLocations();
 	}
 
-	getPossibleMoves(piece: Piece) {
+	getPossibleMovesArray(piece: Piece): Square[] {
 		if (!piece.squareId) throw new Error("piece is not on the board");
 
 		const currentLocation = this._dataStore.getSquareById(piece.squareId);
 
 		if (!currentLocation) throw new Error("square matching with square id not found");
 
-		return this._moveCalculator.getPossibleMoves(piece);
+		return this.flattenPossibleMoves(this._moveCalculator.getPossibleMoves(piece));
 	}
 
 	movePiece(pieceId: string, targetSquareId: string): ChessEvent[] {
@@ -74,23 +74,17 @@ export class Board {
 		return events;
 	}
 
-	private canPieceMakeMove(pieceId: string, targetSquareId: string) {
+	private canPieceMakeMove(pieceId: string, targetSquareId: string): boolean {
 		const piece = this._dataStore.getPieceById(pieceId);
 		if (!piece.squareId) throw new Error("piece is not on the board");
 
 		const targetSquare = this._dataStore.getSquareById(targetSquareId);
-		const canMoveToLocation = this._moveCalculator
-			.getPossibleMoves(piece)
-			.find((possibleMoveSquare) => possibleMoveSquare.id === targetSquare.id);
+		const canMoveToLocation = this.getPossibleMovesArray(piece)
+			.some((possibleMoveSquare) => possibleMoveSquare.id === targetSquare.id);
 
 		return canMoveToLocation;
 	}
 
-	/**
-	 * Checks if a side is checked.
-	 * @param side
-S	 * @returns The piece that initiated a check if there is any
-	 */
 	private isChecked(side: Side): Piece | null {
 		const sideColor = this._dataStore.getColor(side);
 		const king = this.getKingOfColor(sideColor);
@@ -99,7 +93,7 @@ S	 * @returns The piece that initiated a check if there is any
 		const otherSideColor: PieceColor = sideColor === "black" ? "white" : "black";
 
 		for (let pieceOfOtherSide of this.getPiecesCurrentlyOnBoard(otherSideColor)) {
-			const otherKingSquare = this.getPossibleMoves(pieceOfOtherSide)
+			const otherKingSquare = this.getPossibleMovesArray(pieceOfOtherSide)
 				.filter(square => {
 					return square.id === squareKingIsOn.id
 				});
@@ -112,29 +106,60 @@ S	 * @returns The piece that initiated a check if there is any
 
 	private isCheckmated(side: Side) {
 		const sideColor = this._dataStore.getColor(side);
-		const targetKing = this.getKingOfColor(sideColor);
-		const possibleMovesOfKing = this.getPossibleMoves(targetKing);
-		const blockedEscapeSquareIdsOfKing = new Set<string>();
 		const otherSideColor: PieceColor = sideColor === "black" ? "white" : "black";
-		let isKingThreatened = false;
+		const targetKing = this.getKingOfColor(sideColor);
+		const possibleMovesOfKing = this.getPossibleMovesArray(targetKing);	
+		const blockedEscapeSquareIdsOfKing = new Set<string>();
+		const listOfMoveSequencesTargetingKing: Square[][] = [];
 		
-		for (let pieceOfOtherSide of this.getPiecesCurrentlyOnBoard(otherSideColor)) {
-			const pieceMoves = this.getPossibleMoves(pieceOfOtherSide);
+		for(let piece of this.getPiecesCurrentlyOnBoard(otherSideColor)) {
+			const movesInDirections = this._moveCalculator.getPossibleMoves(piece);
+
+			// Find other side's pieces that are targeting the given side's king and save their route towards king
+			const moveSequenceTargetingKing = Array.from(movesInDirections.values())
+				.find(moveSequence => moveSequence[moveSequence.length - 1].id === targetKing.squareId);
 			
-			if (!isKingThreatened)
-				isKingThreatened = !!pieceMoves.find((square) => square.id === targetKing.squareId);
-			
-			pieceMoves
+			moveSequenceTargetingKing && listOfMoveSequencesTargetingKing.push(moveSequenceTargetingKing);
+			//---------------------------------------------------------------
+
+			// Mark the blocked escape squares of king
+			this.flattenPossibleMoves(movesInDirections)
 				.filter((square) => possibleMovesOfKing.some((c) => square.id === c.id))
 				.map((square) => square.id)
 				.forEach((id) => {
 					blockedEscapeSquareIdsOfKing.add(id);
 				});
-
-			if (isKingThreatened && possibleMovesOfKing.length <= blockedEscapeSquareIdsOfKing.size) return true;
+			// ---------------------------------------------------------
 		}
 
-		return false;
+		// Check if any piece of given side can block other side's pieces targeting their king
+		const piecesOfSideOtherExceptKing = 
+			this.getPiecesCurrentlyOnBoard(sideColor).filter(p => p.type !== "king");
+
+		for (let pieceOfSide of piecesOfSideOtherExceptKing) {
+			const movesOfPieceOfSide = this.getPossibleMovesArray(pieceOfSide)
+			
+			const sequenceIndex = listOfMoveSequencesTargetingKing.findIndex(squareSequence => 
+				squareSequence.some(square => movesOfPieceOfSide.some(s => s.id === square.id))
+				);
+			
+			if(sequenceIndex > -1) {
+				listOfMoveSequencesTargetingKing.splice(sequenceIndex, 1);
+			}
+		}
+		//----------------------------------------------------------------------------
+
+		// If king has nowhere to escape while being targeted, it is a checkmate. 
+		return listOfMoveSequencesTargetingKing.length && possibleMovesOfKing.length === blockedEscapeSquareIdsOfKing.size;
+	}
+
+	private flattenPossibleMoves(map: Map<Direction, Square[]>) {
+		return Array.from(map.values())
+			.reduce((flattenedSquares, squaresInDirection) => {
+				flattenedSquares.push(...squaresInDirection)
+				
+				return flattenedSquares;
+			}, []);
 	}
 
 	private getTheSquarePieceIsOn(piece: Piece) {

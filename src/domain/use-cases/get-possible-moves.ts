@@ -14,6 +14,6 @@ export class GetPossibleMoves implements UseCase<{ pieceId: string }, Square[]> 
 
 	execute(input: { pieceId: string }) {
 		const piece = this._dataStore.getPieceById(input.pieceId);
-		return this._board.getPossibleMoves(piece);
+		return this._board.getPossibleMovesArray(piece);
 	}
 }

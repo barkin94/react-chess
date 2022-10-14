@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify";
-import { Square } from "../../board/square.class";
 import { Piece } from "../piece.class";
 import { BishopMoveCalculationStrategy } from "./bishop-move-calculation-strategy.class";
 import { KingMoveCalculationStrategy } from "./king-move-calculation-strategy.class";
@@ -29,7 +28,7 @@ export class MoveCalculator {
 	@inject(KnightMoveCalculationStrategy)
 	private _knightMoveCalculationStrategy!: KnightMoveCalculationStrategy;
 
-	getPossibleMoves(piece: Piece): Square[] {
+	getPossibleMoves(piece: Piece) {
 		let moveStrategy: MoveCalculationStrategy;
 
 		switch (piece.type) {
