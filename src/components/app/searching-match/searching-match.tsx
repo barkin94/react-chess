@@ -1,13 +1,12 @@
-import styles from "./searching-match.module.scss";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../redux/store";
+import { useAppDispatch } from "../../../redux/store";
 import { initMatch } from "../../../redux/thunks/init-match.thunk";
 import { getSocket } from "../../../socket/socket-io";
 import { Spinner } from "../../shared/spinner/spinner";
+import styles from "./searching-match.module.scss";
 
 export const SearchingMatch: React.FC = () => {
-	const dispatch = useDispatch<AppDispatch>();
+	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		const socket = getSocket();

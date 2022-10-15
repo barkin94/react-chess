@@ -1,11 +1,10 @@
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { requestRematch } from "../../../redux/thunks/request-rematch.thunk";
 import { searchMatch } from "../../../redux/thunks/search-match.thunk";
 
 export const MatchEnd: React.FC<{ winner?: string }> = (props) => {
-	const dispatch = useDispatch<AppDispatch>();
-	const playerColor = useSelector((state: RootState) => state.game.playerColor);
+	const dispatch = useAppDispatch();
+	const playerColor = useAppSelector(state => state.game.playerColor);
 	
 	const getMatchResultText = () => {
 		if (!props.winner)

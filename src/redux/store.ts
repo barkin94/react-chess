@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
 import { useCases } from "../domain/domain";
 import { getSocket } from "../socket/socket-io";
@@ -25,8 +26,9 @@ export const store = configureStore({
 		}),
 });
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
-
 export type AppDispatch = typeof store.dispatch;
 export type AppThunkExtraArgs = typeof useCases & { getSocket: () => Socket };
+
+export const useAppDispatch: () => AppDispatch = useDispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

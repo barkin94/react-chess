@@ -1,9 +1,8 @@
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../redux/store";
+import { useAppDispatch } from "../../../redux/store";
 import { replyToRematchRequest } from "../../../redux/thunks/reply-to-rematch-request.thunk";
 
 export const RematchRequestReceived: React.FC = () => {
-	const dispatch = useDispatch<AppDispatch>();
+	const dispatch = useAppDispatch();
 
 	return (
 		<div>
