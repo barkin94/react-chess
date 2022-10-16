@@ -1,14 +1,9 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { AppThunkExtraArgs } from "../store";
+import { appCreateAsyncThunk } from "../store";
 
-export type ArgType = {
-	pieceId: string;
-};
-export const toggleOnAvailableMoves = createAsyncThunk<
+export const toggleOnAvailableMoves = appCreateAsyncThunk<
 	{ highlightedSquares: string[]; selectedPieceId: string },
-	ArgType,
-	{ extra: AppThunkExtraArgs }
->("toggleOnAvailableMoves", (args: ArgType, { extra }) => {
+	{ pieceId: string; }
+>("toggleOnAvailableMoves", (args, { extra }) => {
 	const availableSquares = extra.getPossibleMoves.execute({ pieceId: args.pieceId });
 
 	return {

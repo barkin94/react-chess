@@ -1,17 +1,17 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
 import { PieceColor } from "../../domain/shared";
 import { PieceLocationsForReducer, StartingData } from "../reducers/board";
 import { closeModal } from "../reducers/modal";
-import { AppThunkExtraArgs } from "../store";
+import { appCreateAsyncThunk } from "../store";
 
 export type InitMatchArg = {
 	playerColor: PieceColor;
 };
 
-export const initMatch = createAsyncThunk<StartingData, InitMatchArg, { extra: AppThunkExtraArgs }>(
+export const initMatch = appCreateAsyncThunk<StartingData, InitMatchArg>(
 	"initMatch",
-	(args: InitMatchArg, { extra, dispatch }) => {
-		const initialData = extra.initMatch.execute(args.playerColor);
+	(initMatchArgs, { extra, dispatch }) => {
+		const playerColor = initMatchArgs.playerColor;
+		const initialData = extra.initMatch.execute(playerColor);
 
 		const squareData: StartingData["squareData"] = [];
 		initialData.squareLayout.forEach((row) => {
@@ -24,7 +24,7 @@ export const initMatch = createAsyncThunk<StartingData, InitMatchArg, { extra: A
 		dispatch(closeModal());
 
 		return {
-			playerColor: args.playerColor,
+			playerColor,
 			squareData,
 			pieceLocations,
 		};
