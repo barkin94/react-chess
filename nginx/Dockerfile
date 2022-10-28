@@ -1,6 +1,7 @@
+FROM node:16 as builder
+
 ARG SOCKET_URL
 
-FROM node:16 as builder
 ENV REACT_APP_SOCKET_URL=$SOCKET_URL
 WORKDIR /usr/src/app
 COPY package*.json ./
