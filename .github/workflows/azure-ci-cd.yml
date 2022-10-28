@@ -1,8 +1,9 @@
-name: CI
+name: Build and push image to Dockerhub, then deploy to Azure Web App
 
 on:
   push:
     branches: [ "azure-ci-cd" ]
+  workflow_dispatch:
 
 env:
   PROJECT_NAME: ${{ github.event.repository.name }}
