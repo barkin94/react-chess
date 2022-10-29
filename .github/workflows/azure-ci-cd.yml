@@ -1,4 +1,8 @@
-name: Build and push image to Dockerhub, then deploy to Azure Web App
+#1) Build and push image to Dockerhub
+#2) Bump release version
+#3) Deploy to Azure Web App 
+
+name: CI-CD
 
 on:
   push:
@@ -44,9 +48,18 @@ jobs:
           cache-from: type=registry,ref=${{ env.USERNAME }}/${{ env.PROJECT_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.USERNAME }}/${{ env.PROJECT_NAME }}:buildcache,mode=max
           
-  deploy:
+  auto-tag:
     runs-on: ubuntu-latest
     needs: build
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: node
+          package-name: release-please-action
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: auto-tag
     environment:
       name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
