@@ -1,4 +1,5 @@
 import React from "react";
+import { GIVE_UP } from "../../../redux/modal-component-names";
 import { openModal } from "../../../redux/reducers/modal";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { Board } from "./board/board";
@@ -23,7 +24,7 @@ export const Chess: React.FC = () => {
 						{playerScore} - {opponentScore}
 					</span>
 					<span>
-						<button onClick={() => dispatch(openModal({ componentName: "GiveUp" }))}>Leave Match</button>
+						<button onClick={() => dispatch(openModal({ componentName: GIVE_UP }))}>Leave Match</button>
 					</span>
 				</div>
 				<div id={styles["match-body"]}>
