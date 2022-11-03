@@ -1,16 +1,29 @@
 import { AsyncThunkPayloadCreator, configureStore, createAsyncThunk } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { Socket } from "socket.io-client";
 import { useCases } from "../domain/domain";
-import { getSocket } from "../socket/socket-io";
+import { getSocket, initSocket } from "../socket/socket-io";
 import board from "./reducers/board";
 import game from "./reducers/game";
 import modal from "./reducers/modal";
 
-type AppThunkExtraArgs = typeof useCases & { getSocket: () => Socket };
+export interface Socket {
+	on: <T = void>(eventName: string, callback: (args: T) => void) => void,
+	off: (eventName: string) => void
+	emit: <T>(eventName: string, payload?: T) => void
+}
+
+type AppThunkExtraArgs = 
+	typeof useCases &
+	{
+		initSocket: () => Promise<Socket>,
+		getSocket: () => Socket 
+	};
+
+
 const extraArgument: AppThunkExtraArgs = {
 	...useCases,
 	getSocket,
+	initSocket
 };
 
 export const store = configureStore({

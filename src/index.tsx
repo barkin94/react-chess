@@ -14,8 +14,6 @@ import "./inversify.config";
 import { GIVE_UP, MATCH_END, OPPONENT_LEFT_MATCH, OPPONENT_REJECTED_REMATCH, REMATCH_REQUEST_RECEIVED } from "./redux/modal-component-names";
 import { store } from "./redux/store";
 import reportWebVitals from "./reportWebVitals";
-import { initSocket } from "./socket/socket-io";
-import { initServerEventHandlers } from "./socket/socket-io-events";
 
 setModalConfig([
 	{ name: GIVE_UP, component: GiveUp },
@@ -41,6 +39,3 @@ ReactDOM.render(
 if (process.env.NODE_ENV === "production") {
 	reportWebVitals();
 }
-
-const socket = initSocket();
-initServerEventHandlers(socket, store);

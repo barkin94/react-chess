@@ -7,11 +7,11 @@ import styles from "./chess.module.scss";
 import { PlayerPanel } from "./player-panel/player-panel";
 
 export const Chess: React.FC = () => {
-	const isWaitingTurn = useAppSelector(state => state.game.waitingTurn);
-	const opponentsCapturedPieces = useAppSelector(state => state.game.opponentsCapturedPieces);
-	const yourCapturedPieces = useAppSelector(state => state.game.yourCapturedPieces);
-	const playerScore = useAppSelector(state => state.game.score.player);
-	const opponentScore = useAppSelector(state => state.game.score.opponent);
+	const isWaitingTurn = useAppSelector(state => state.board.waitingTurn);
+	const opponentsCapturedPieces = useAppSelector(state => state.board.opponentsCapturedPieces);
+	const yourCapturedPieces = useAppSelector(state => state.board.yourCapturedPieces);
+	const playerScore = useAppSelector(state => state.board.score.player);
+	const opponentScore = useAppSelector(state => state.board.score.opponent);
 	const dispatch = useAppDispatch();
 
 	// TODO: players should be able to enter their names before joining match queue.

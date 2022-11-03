@@ -41,7 +41,7 @@ export const Square: React.FC<SquareProps> = (props) => {
 	// When waiting for the player's turn, click events on the squares are disabled
 	//----------------------------------------------------------------------------------
 	const squareElemRef = useRef<HTMLElement>(null);
-	const isOpponentsTurn = useAppSelector(state => state.game.waitingTurn);
+	const isOpponentsTurn = useAppSelector(state => state.board.waitingTurn);
 
 	useLayoutEffect(() => {
 		squareElemRef.current!.onclick = isOpponentsTurn ? (event) => event.stopPropagation() : null;

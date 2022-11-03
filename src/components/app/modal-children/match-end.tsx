@@ -4,7 +4,7 @@ import { searchMatch } from "../../../redux/thunks/search-match.thunk";
 
 export const MatchEnd: React.FC<{ winner?: string }> = (props) => {
 	const dispatch = useAppDispatch();
-	const playerColor = useAppSelector(state => state.game.playerColor);
+	const playerColor = useAppSelector(state => state.board.playerColor);
 	
 	const getMatchResultText = () => {
 		if (!props.winner)

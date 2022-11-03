@@ -1,9 +1,17 @@
-.searching-match {
+.loading {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 100%;
 	height: 100%;
+
+	.loading-text {
+		position: relative;
+
+		.dots {
+			position: absolute;
+		}
+	}
 
 	div {
 		margin-left: 1em;

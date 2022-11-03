@@ -1,9 +1,27 @@
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
+import { Socket } from "../redux/store";
 
 let socket: Socket;
-export const initSocket = () => {
-	socket = io(process.env.REACT_APP_SOCKET_URL || "localhost:3001");
-	return socket;
+
+/**
+ * Connects to the server, and resolves on connection
+ * @returns connected socket 
+ */
+export const initSocket = async (): Promise<Socket> => {
+	const conn = io(process.env.REACT_APP_SOCKET_URL || "localhost:3001");
+	
+	return new Promise(resolve => {
+		conn.on('connect', () => {
+			const connectionSocket: Socket = {
+				emit: conn.emit,
+				off: conn.off,
+				on: conn.on
+			}
+
+			socket = connectionSocket;
+			resolve(socket)
+		})
+	})
 };
 
 export const getSocket = (): Socket => {
