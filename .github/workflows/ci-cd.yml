@@ -1,11 +1,9 @@
 name: CI-CD
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
-      - main
+      - "connecting-text"
 
 env:
   PROJECT_NAME: ${{ github.event.repository.name }}
